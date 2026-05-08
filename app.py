@@ -1,73 +1,88 @@
 import streamlit as st
 import pandas as pd
 
-# 1. إعدادات الصفحة الأساسية
-st.set_page_config(page_title="AI Health Tracker", page_icon="💪")
+# 1. إعدادات الصفحة
+st.set_page_config(page_title="AI Health Master v14", page_icon="⚡", layout="wide")
 
-# 2. قاموس البيانات الموحد (تم إصلاح المسميات لمنع KeyError)
-HEALTH_DB = {
+# 2. إرجاع التصميم الاحترافي (CSS) - بدون مكتبات خارجية
+st.markdown("""
+    <style>
+    .stApp { background-color: #f4f7f6; }
+    .main-header {
+        background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+        padding: 30px; border-radius: 20px; color: white; text-align: center; margin-bottom: 25px;
+    }
+    .result-card {
+        background: white; padding: 25px; border-radius: 15px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1); border-right: 10px solid #1e3a8a;
+    }
+    </style>
+""", unsafe_allow_html=True)
+
+# 3. الموسوعة الشاملة (حل مشكلة KeyError اللي ظهرت قبل كدة)
+HEALTH_GUIDE = {
     "نحافة": {
-        "تحليل": "وزنك أقل من الطبيعي، تحتاج لزيادة السعرات الصحية.",
-        "نصيحة": "ركز على تناول الكربوهيدرات المعقدة والبروتين.",
-        "اللون": "#3b82f6"
+        "تحليل": "مؤشر كتلة جسمك منخفض. نحتاج للتركيز على الأطعمة الغنية بالطاقة.",
+        "نصيحة": "تناول 5 وجبات صغيرة يومياً وركز على المكسرات وزيت الزيتون والبروتين.",
+        "أيقونة": "❄️"
     },
     "مثالي": {
-        "تحليل": "وزنك في النطاق الصحي المثالي، استمر على هذا المنوال!",
-        "نصيحة": "حافظ على التوازن بين الغذاء والنشاط البدني.",
-        "اللون": "#10b981"
+        "تحليل": "أنت في النطاق الصحي المثالي. استمر في الحفاظ على هذا الإنجاز!",
+        "نصيحة": "التنويع في الخضروات الورقية وممارسة الرياضة سيضمن استمرارك.",
+        "أيقونة": "🎈"
     },
     "زيادة وزن": {
-        "تحليل": "وزنك أعلى من النطاق المثالي، يفضل البدء بنظام غذائي.",
-        "نصيحة": "قلل من السكريات المضافة وزد من شرب الماء والحركة.",
-        "اللون": "#f59e0b"
+        "تحليل": "هناك زيادة بسيطة في الكتلة. تنظيم السعرات هو الحل الأمثل.",
+        "نصيحة": "استبدل العصائر بالماء، وحاول المشي 30 دقيقة يومياً.",
+        "أيقونة": "🔥"
     }
 }
 
-# 3. واجهة المستخدم (التصميم)
-st.title("🛡️ المستشار الصحي الذكي")
-st.write("أدخل بياناتك للحصول على تحليل فوري ومسار توقع للوزن.")
+# 4. واجهة المستخدم
+st.markdown('<div class="main-header"><h1>🛡️ AI Health Master Pro</h1><p>النسخة المستقرة فائقة الأداء</p></div>', unsafe_allow_html=True)
 
-with st.form("health_form"):
-    name = st.text_input("👤 الاسم:")
+with st.container():
     col1, col2 = st.columns(2)
     with col1:
-        weight = st.number_input("⚖️ الوزن (كجم):", 30.0, 200.0, 70.0)
+        name = st.text_input("👤 اسم البطل:")
+        weight = st.number_input("⚖️ الوزن الحالي (كجم):", 30.0, 200.0, 75.0)
     with col2:
-        height = st.number_input("📏 الطول (سم):", 100, 250, 170)
-    
-    goal = st.selectbox("🎯 هدفك:", ["خسارة وزن", "بناء عضلات", "صحة عامة"])
-    submit = st.form_submit_button("إصدار التقرير")
+        height = st.number_input("📏 الطول (سم):", 100, 250, 175)
+        goal = st.selectbox("🎯 هدفك القادم:", ["تنشيف دهون", "ضخامة عضلية", "تحسين لياقة"])
 
-# 4. محرك التحليل
-if submit:
+# 5. محرك التحليل (Logic)
+if st.button("🚀 تحليل البيانات وإصدار التقرير"):
     if not name:
-        st.warning("يرجى إدخال اسمك.")
+        st.warning("من فضلك اكتب اسمك أولاً!")
     else:
-        # حساب مؤشر كتلة الجسم BMI
+        # الحسابات
         bmi = weight / ((height/100)**2)
         
-        # تحديد الحالة (Logic)
+        # التصنيف
         if bmi < 18.5: status = "نحافة"
         elif bmi < 25: status = "مثالي"
         else: status = "زيادة وزن"
         
-        # جلب البيانات من القاموس (بدون KeyError)
-        data = HEALTH_DB[status]
+        # استدعاء البيانات بأمان (حل KeyError)
+        res = HEALTH_GUIDE[status]
         
-        # عرض النتائج
-        st.balloons()
-        st.success(f"أهلاً بك يا {name}! إليك تقريرك:")
+        # الاحتفالات
+        if status == "نحافة": st.snow()
+        else: st.balloons()
         
-        st.metric("مؤشر كتلة جسمك (BMI)", f"{bmi:.1f}", status)
+        # عرض النتائج في كروت شيك
+        st.markdown(f'<div class="result-card"><h3>📊 تقرير البطل: {name}</h3>', unsafe_allow_html=True)
         
-        st.info(f"🔬 **التحليل:** {data['تحليل']}")
-        st.warning(f"💡 **نصيحة الخبراء:** {data['نصيحة']}")
+        r1, r2, r3 = st.columns(3)
+        r1.metric("مؤشر الكتلة (BMI)", f"{bmi:.1f}", status)
+        r2.write(f"🔬 **التحليل:** {res['تحليل']}")
+        r3.write(f"💡 **النصيحة:** {res['نصيحة']}")
         
-        # 5. رسم بياني بسيط (باستخدام مكتبة ستريمليت الأساسية فقط)
-        st.subheader("📈 مسار الوزن المتوقع (30 يوم)")
-        change = -0.15 if goal == "خسارة وزن" else 0.1 if goal == "بناء عضلات" else 0.02
-        predictions = [weight + (i * change) for i in range(30)]
-        st.line_chart(predictions)
-
-else:
-    st.info("قم بملء النموذج أعلاه واضغط على زر التقرير.")
+        st.markdown('</div>', unsafe_allow_html=True)
+        
+        # الرسم البياني (آمن جداً)
+        st.write("---")
+        st.subheader("📈 توقعات مسار وزنك في 30 يوم")
+        change_rate = -0.12 if "تنشيف" in goal else 0.1 if "ضخامة" in goal else 0.02
+        future_weights = [weight + (i * change_rate) for i in range(30)]
+        st.line_chart(future_weights)
