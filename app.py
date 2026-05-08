@@ -5,128 +5,143 @@ import random
 import time
 
 # 1. إعدادات الصفحة الفاخرة
-st.set_page_config(page_title="AI Health Master v7", page_icon="🏆", layout="wide")
+st.set_page_config(page_title="AI Health Master Pro", page_icon="⚡", layout="wide")
 
-# تصميم CSS احترافي (ألوان فاتحة، وضوح تام، وتصميم Glassmorphism)
+# CSS متطور جداً (تصميم النيون الهادئ وتأثيرات حركية)
 st.markdown("""
     <style>
-    .stApp { background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); }
-    .hero { background: linear-gradient(90deg, #1e40af 0%, #3b82f6 100%); padding: 3rem; border-radius: 2rem; color: white; text-align: center; margin-bottom: 2rem; box-shadow: 0 15px 30px rgba(59,130,246,0.2); }
-    .glass-card { background: rgba(255, 255, 255, 0.9); border-radius: 1.5rem; padding: 2rem; box-shadow: 0 10px 25px rgba(0,0,0,0.05); border: 1px solid white; margin-bottom: 1.5rem; }
-    .metric-value { font-size: 2rem; font-weight: 800; color: #1e40af; }
-    .tip-box { background: #eff6ff; border-right: 5px solid #3b82f6; padding: 1rem; border-radius: 0.8rem; margin: 0.8rem 0; color: #1e3a8a; font-weight: 500; }
-    .stButton>button { background: #1e40af; color: white !important; border-radius: 50px; padding: 0.8rem 2rem; font-size: 1.2rem; width: 100%; transition: 0.4s; border: none; }
-    .stButton>button:hover { background: #2563eb; transform: scale(1.02); box-shadow: 0 10px 20px rgba(37,99,235,0.3); }
+    .stApp { background: #f0f2f6; }
+    .main-header {
+        background: linear-gradient(120deg, #1557ff 0%, #00d4ff 100%);
+        padding: 50px; border-radius: 30px; color: white;
+        text-align: center; margin-bottom: 40px;
+        box-shadow: 0 20px 40px rgba(21, 87, 255, 0.2);
+    }
+    .status-card {
+        background: white; border-radius: 20px; padding: 25px;
+        border-bottom: 5px solid #1557ff;
+        transition: transform 0.3s ease;
+    }
+    .status-card:hover { transform: translateY(-10px); }
+    .badge {
+        background: #ffd700; color: #000; padding: 5px 15px;
+        border-radius: 50px; font-weight: bold; font-size: 14px;
+    }
+    .stNumberInput, .stTextInput { border-radius: 15px !important; }
     </style>
     """, unsafe_allow_html=True)
 
-# 2. الموسوعة الصحية الشاملة (Database)
-HEALTH_MATRIX = {
+# 2. الموسوعة المحدثة (داتا موسعة جداً)
+ADVANCED_DB = {
     "نحافة": {
-        "تحليل": "جسمك يحتاج لبروتوكول بناء عالي السعرات. التركيز الحالي على تحسين الامتصاص وبناء الألياف العضلية.",
-        "تغذية": ["زد السعرات بـ 500 نقطة يومياً", "ركز على الدهون الصحية (مكسرات، أفوكادو)", "تناول وجبات غنية بالكربوهيدرات المعقدة"],
-        "تمارين": "تمارين المقاومة (أوزان ثقيلة) 3-4 أيام أسبوعياً مع فترات راحة طويلة.",
-        "نفسية": "قلل مسببات التوتر لأنها ترفع معدل الحرق اللاإرادي.",
-        "تفاعل": "snow"
+        "التحليل": "جسمك في حالة 'الأيض السريع'. نحتاج لإعادة هندسة الكتلة العضلية وتخزين الطاقة.",
+        "سوبر_فود": ["زبدة اللوز", "الشوفان بالحليب كامل الدسم", "سمك السلمون", "البطاطا الحلوة"],
+        "مشروبات": "عصير الأفوكادو بالعسل، سموزي البروتين الطبيعي.",
+        "الخطة_الرياضية": "رفع أثقال (شدة عالية) مع تكرارات قليلة (6-8) لزيادة الضخامة.",
+        "التحدي": "تحدي الـ 3000 سعرة حرارية يومياً.",
+        "وسام": "🎖️ صانع العضلات الناشئ"
     },
     "مثالي": {
-        "تحليل": "أنت في منطقة الكفاءة الحيوية القصوى. هدفنا هو الحفاظ على هذا التوازن وتطوير اللياقة القلبية.",
-        "تغذية": ["نظام 40-30-30 (كارب-بروتين-دهون)", "حافظ على شرب 3-4 لتر ماء", "ركز على الأطعمة الغنية بمضادات الأكسدة"],
-        "تمارين": "نظام الهجين (Hybrid Training)؛ يوم قوة ويوم كارديو عالي الكثافة.",
-        "نفسية": "مارس التأمل الصباحي للحفاظ على صفاء الذهن والتركيز.",
-        "تفاعل": "balloons"
+        "التحليل": "أنت في مرحلة 'الاستدامة الحيوية'. هدفنا هو تحسين الأداء الرياضي والوقاية الطويلة.",
+        "سوبر_فود": ["بذور الشيا", "صدور الدجاج المشوية", "البروكلي", "التوت الأزرق"],
+        "مشروبات": "الشاي الأخضر بالليمون، مياه الديتوكس بالنعناع.",
+        "الخطة_الرياضية": "نظام الكروس فت أو السباحة لمدة ساعة 3 مرات أسبوعياً.",
+        "التحدي": "تحدي المرونة واليوجا الصباحية.",
+        "وسام": "💎 البطل المتوازن"
     },
     "زيادة وزن": {
-        "تحليل": "نحتاج لإعادة ضبط حساسية الأنسولين وتنشيط محركات حرق الدهون في الجسم.",
-        "تغذية": ["امنع السكريات المضافة تماماً", "ابدأ وجبتك بالألياف والخضروات", "اتبع نظام الصيام المتقطع (16:8)"],
-        "تمارين": "تمارين HIIT ونشاط حركي لا يقل عن 10 آلاف خطوة يومياً.",
-        "نفسية": "النوم قبل الساعة 11 مساءً ضروري جداً لتنظيم هرمونات الحرق.",
-        "تفاعل": "celebrate"
+        "التحليل": "الجسم في مرحلة 'المقاومة'. سنعمل على تنشيط الغدد المسؤولة عن الحرق وتقليل الالتهابات.",
+        "سوبر_فود": ["البيض المسلوق", "السبانخ", "صدور الرومي", "الجوز (عين الجمل)"],
+        "مشروبات": "القهوة السوداء (بدون سكر)، منقوع القرفة والزنجبيل.",
+        "الخطة_الرياضية": "تمارين الـ HIIT لمدة 20 دقيقة يومياً + مشي سريع بعد الوجبات.",
+        "التحدي": "تحدي الـ 10 آلاف خطوة وقطع السكر.",
+        "وسام": "🔥 محارب الدهون"
     }
 }
 
-# 3. واجهة التحكم (The Dashboard)
-st.markdown('<div class="hero"><h1>🛡️ AI Health Master: البروتوكول النهائي</h1><p>نظام التحليل المتطور 2026 - الإصدار السابع</p></div>', unsafe_allow_html=True)
+# 3. تصميم الواجهة (The High-Level UI)
+st.markdown('<div class="main-header"><h1>🚀 AI Health Hub: Level Up</h1><p>مستشارك الذكي المعتمد على البيانات الضخمة</p></div>', unsafe_allow_html=True)
 
-with st.container():
-    st.markdown("### 📋 أدخل بيانات البروتوكول:")
-    c1, c2, c3 = st.columns(3)
-    with c1:
-        name = st.text_input("👤 كود المستخدم (الاسم):", placeholder="اكتب اسمك...")
+with st.expander("🛠️ إعدادات الحساب وتخصيص البيانات", expanded=True):
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        user_name = st.text_input("👤 كود المستخدم:", value="بطل 2026")
         age = st.number_input("🎂 العمر:", 10, 100, 25)
-    with c2:
-        weight = st.number_input("⚖️ الوزن الحالي (كجم):", 30, 200, 75)
-        height = st.number_input("📏 الطول الكلي (سم):", 100, 250, 175)
-    with c3:
-        goal = st.selectbox("🎯 المسار الاستراتيجي:", ["تنشيف وحرق دهون", "بناء عضلات وضخامة", "تحسين الصحة العامة"])
-        water = st.slider("💧 أكواب الماء:", 0, 20, 8)
+    with col2:
+        weight = st.number_input("⚖️ الوزن الحالي (كجم):", 30.0, 200.0, 70.0)
+        height = st.number_input("📏 الطول (سم):", 100, 250, 175)
+    with col3:
+        goal = st.selectbox("🎯 الهدف الاستراتيجي:", ["تدمير الدهون", "بناء كتلة صلبة", "لياقة أبدية"])
+        activity = st.select_slider("⚡ مستوى نشاطك:", options=["خامل", "متوسط", "نشط جداً"])
 
-st.markdown("---")
-col_habits1, col_habits2 = st.columns(2)
-with col_habits1: sleep = st.select_slider("😴 دورة النوم (ساعة):", options=list(range(13)), value=8)
-with col_habits2: phone = st.select_slider("📱 إجهاد الشاشة (ساعة):", options=list(range(17)), value=5)
+st.write("---")
 
-# 4. محرك التحليل والذكاء التفاعلي
-if st.button("🚀 تشغيل محرك التحليل الشامل"):
-    if not name:
-        st.error("⚠️ يرجى إدخال اسم المستخدم لتشغيل النظام.")
-    else:
-        with st.spinner('جاري معالجة البيانات واستخراج النتائج من الموسوعة...'):
-            time.sleep(1)
-            
-        bmi = weight / ((height/100)**2)
-        if bmi < 18.5: status = "نحافة"
-        elif bmi < 25: status = "مثالي"
-        else: status = "زيادة وزن"
+# تفاعل إضافي: عادات اليوم
+st.subheader("📊 مؤشرات الأداء اليومي")
+c1, c2, c3, c4 = st.columns(4)
+water = c1.number_input("💧 مياه (أكواب):", 0, 20, 8)
+sleep = c2.number_input("😴 نوم (ساعات):", 0, 12, 8)
+steps = c3.number_input("👣 خطوات اليوم:", 0, 30000, 5000)
+stress = c4.slider("🧠 مستوى التوتر:", 1, 10, 5)
+
+# 4. محرك التشغيل (Execution Engine)
+if st.button("🔥 تفعيل التحليل الذكي الشامل"):
+    with st.status("جاري الاتصال بقاعدة البيانات العملاقة...", expanded=True) as status_load:
+        st.write("تحليل مؤشرات الجسم...")
+        time.sleep(1)
+        st.write("مطابقة البيانات مع الأهداف الاستراتيجية...")
+        time.sleep(1)
+        status_load.update(label="✅ اكتمل التحليل!", state="complete", expanded=False)
+
+    bmi = weight / ((height/100)**2)
+    if bmi < 18.5: status = "نحافة"
+    elif bmi < 25: status = "مثالي"
+    else: status = "زيادة وزن"
+    
+    data = ADVANCED_DB[status]
+    
+    # تفاعل بصري (حسب السكور)
+    score = (water*5) + (sleep*5) + (steps/500) - (stress*2)
+    if score > 70: st.balloons()
+    else: st.toast("تقريرك جاهز، يمكنك تحسين نتائجك غداً!", icon="📈")
+
+    # عرض النتائج بطريقة احترافية
+    st.markdown(f"## 🏆 النتائج الاحترافية لـ {user_name}")
+    
+    r1, r2, r3, r4 = st.columns(4)
+    r1.markdown(f'<div class="status-card"><h3>⚖️ BMI</h3><h2 style="color:#1557ff">{bmi:.1f}</h2><p>{status}</p></div>', unsafe_allow_html=True)
+    r2.markdown(f'<div class="status-card"><h3>⭐ سكور</h3><h2 style="color:#10b981">{int(score)}%</h2><p>نقاط الصحة</p></div>', unsafe_allow_html=True)
+    r3.markdown(f'<div class="status-card"><h3>🛡️ الوسام</h3><span class="badge">{data["وسام"]}</span></div>', unsafe_allow_html=True)
+    r4.markdown(f'<div class="status-card"><h3>🔥 حرق</h3><h2 style="color:#f59e0b">{int(1.2 * (10*weight + 6.25*height))}</h2><p>BMR</p></div>', unsafe_allow_html=True)
+
+    st.divider()
+
+    col_info1, col_info2 = st.columns([1.5, 1])
+    
+    with col_info1:
+        st.markdown(f"### 🧪 التحليل العلمي: {status}")
+        st.info(data["التحليل"])
         
-        # استدعاء البيانات بأمان لتجنب الـ KeyError
-        data = HEALTH_MATRIX.get(status)
+        st.markdown("### 📈 مسار التغير المتوقع (30 يوم)")
+        days = list(range(1, 31))
+        # معادلة رياضية ديناميكية للرسم البياني
+        base_trend = [weight + (d * (0.1 if "بناء" in goal else -0.15 if "تدمير" in goal else 0.02)) for d in days]
+        chart_df = pd.DataFrame({"الوزن المتوقع": base_trend}, index=days)
+        st.line_chart(chart_df)
+
+    with col_info2:
+        st.markdown("### 🥗 قائمة الـ Super Food")
+        for food in data["sوبر_فود"]:
+            st.success(f"🔹 {food}")
         
-        # التفاعلات الذكية
-        if data["تفاعل"] == "snow": st.snow()
-        elif data["تفاعل"] == "balloons": st.balloons()
-        else: 
-            st.balloons()
-            st.toast("🔥 تم تحقيق أقصى كفاءة للتقرير!", icon="✅")
-
-        st.markdown(f"## 📊 التقرير التحليلي لـ {name}")
+        st.markdown("### 🥤 مشروبات الطاقة الطبيعية")
+        st.warning(data["مشروبات"])
         
-        # صف النتائج بالأرقام الكبيرة
-        r1, r2, r3, r4 = st.columns(4)
-        with r1: st.markdown(f'<div class="glass-card"><h3>⚖️ BMI</h3><p class="metric-value">{bmi:.1f}</p><p>{status}</p></div>', unsafe_allow_html=True)
-        with r2: 
-            score = (water*5) + (sleep*8) - (phone*4)
-            st.markdown(f'<div class="glass-card"><h3>⭐ سكور</h3><p class="metric-value">{max(0, score)}%</p><p>كفاءة العادات</p></div>', unsafe_allow_html=True)
-        with r3:
-            bmr = (10 * weight) + (6.25 * height) - (5 * age)
-            st.markdown(f'<div class="glass-card"><h3>🔥 BMR</h3><p class="metric-value">{int(bmr)}</p><p>سعرة/يوم</p></div>', unsafe_allow_html=True)
-        with r4:
-            st.markdown(f'<div class="glass-card"><h3>🛡️ الحالة</h3><p class="metric-value">نشط</p><p>بروتوكول فعال</p></div>', unsafe_allow_html=True)
-
-        st.divider()
-
-        # الداتا الموسوعية والرسوم البيانية
-        res_col1, res_col2 = st.columns([1.3, 1])
+        st.markdown(f"### 🏋️ بروتوكول: {goal}")
+        st.write(data["الخطة_الرياضية"])
         
-        with res_col1:
-            st.markdown(f'<div class="glass-card"><h3>🔬 التحليل البيولوجي</h3><p>{data["تحليل"]}</p></div>', unsafe_allow_html=True)
-            st.markdown("### 📈 مسار التوقع لـ 30 يوم القادمة")
-            days = list(range(1, 31))
-            if "تنشيف" in goal: trend = [weight - (d * 0.15) for d in days]
-            elif "بناء" in goal: trend = [weight + (d * 0.1) for d in days]
-            else: trend = [weight + np.sin(d)*0.4 for d in days]
-            
-            st.line_chart(pd.DataFrame({"الوزن": trend}, index=days))
+        st.error(f"🚩 **التحدي الحالي:** {data['التحدي']}")
 
-        with res_col2:
-            st.markdown("### 🥗 الخطة الغذائية المقترحة")
-            for tip in data["تغذية"]:
-                st.markdown(f'<div class="tip-box">✅ {tip}</div>', unsafe_allow_html=True)
-            
-            st.markdown("### 🏋️ هندسة النشاط البدني")
-            st.success(data["تمارين"])
-            st.info(f"🧘 **نصيحة ذهبية:** {data['نفسية']}")
-
-        st.snow()
+    st.snow()
 else:
-    st.info("👋 مرحباً بك في مستشارك الصحي الذكي. املأ بياناتك واضغط على الزر لإصدار التقرير.")
+    st.info("💡 أدخل بياناتك في الأعلى للحصول على تحليل 'الليفل الأعلى'!")
