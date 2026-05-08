@@ -3,136 +3,118 @@ import pandas as pd
 import numpy as np
 import random
 
-# 1. إعدادات الصفحة - الصفحة بقت "عرض واسع" لشكل احترافي
-st.set_page_config(page_title="المستشار الصحي المتكامل", page_icon="🏛️", layout="wide")
+# 1. إعدادات الصفحة والتصميم
+st.set_page_config(page_title="المستشار الصحي الذكي Pro", page_icon="🧪", layout="wide")
 
-# تصميم الألوان والبطاقات (CSS)
 st.markdown("""
     <style>
-    .main { background-color: #f8f9fa; }
-    .card { 
-        background: white; 
-        padding: 20px; 
-        border-radius: 15px; 
-        box-shadow: 0 4px 15px rgba(0,0,0,0.1); 
-        text-align: center; 
-        border-top: 5px solid #2E7D32;
-    }
-    .info-box {
-        background-color: #ffffff;
-        border-right: 8px solid #4CAF50;
-        padding: 20px;
-        border-radius: 10px;
-        margin: 10px 0;
-        box-shadow: 2px 2px 5px rgba(0,0,0,0.05);
-    }
-    h1 { color: #1B5E20; text-align: center; font-family: 'Arial'; }
+    .main { background-color: #f4f7f6; }
+    .stMetric { background-color: white; padding: 15px; border-radius: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+    .card-pro { background: white; padding: 20px; border-radius: 20px; border-right: 10px solid #2E7D32; box-shadow: 0 10px 20px rgba(0,0,0,0.05); margin-bottom: 20px; }
+    h1 { color: #1B5E20; text-align: center; font-weight: bold; }
     </style>
     """, unsafe_allow_html=True)
 
-# 2. قاعدة بيانات الموسوعة الضخمة (Data)
-# ضفنا هنا تفاصيل أكتر بكتير عشان الردود متكونش مكررة
-HEALTH_DB = {
+# 2. الموسوعة الصحية الضخمة
+HEALTH_DATABASE = {
     "نحافة": {
-        "تحليل": "جسمك يحتاج لبناء كتلة عضلية وزيادة سعرات صحية.",
-        "نصائح_غذائية": ["تناول البروتين (بيض، لحوم، بقوليات)", "أضف الدهون الصحية (زيت زيتون، مكسرات)", "تناول 5 وجبات صغيرة بدلاً من 3 كبيرة"],
-        "جدول_تمارين": "تمارين المقاومة ورفع الأثقال (3 أيام أسبوعياً) مع تقليل الكارديو.",
-        "تحدي": "تناول ملعقة عسل كبيرة مع 7 تمرات اليوم."
+        "الحالة": "تحتاج بناء كتلة",
+        "الأكل": ["وجبات عالية السعرات (مكسرات، عسل، بروتين)", "شرب العصائر الطبيعية بين الوجبات", "زيادة حصص النشويات الصحية"],
+        "الرياضة": "تمارين المقاومة (رفع أثقال) 3-4 مرات أسبوعياً.",
+        "نصيحة_سلوكية": "قلل الكافيين لأنه يسد الشهية."
     },
     "مثالي": {
-        "تحليل": "أنت في أفضل حالاتك الصحية! هدفنا هو الحفاظ على اللياقة.",
-        "نصائح_غذائية": ["الحفاظ على توازن النشويات والبروتين", "تناول الخضروات الورقية يومياً", "تقليل الملح في الطعام"],
-        "جدول_تمارين": "مزيج من المشي السريع (30 دقيقة) وتمارين السويدي.",
-        "تحدي": "جرب تمرين 'البلانك' لمدة دقيقة كاملة اليوم."
+        "الحالة": "وزن رائع ومثالي",
+        "الأكل": ["توازن بين البروتين والخضروات", "تقليل السكريات المصنعة", "شرب 3 لتر ماء يومياً"],
+        "الرياضة": "مزيج من اليوجا، المشي السريع، وتمارين القوة.",
+        "نصيحة_سلوكية": "حافظ على مواعيد نوم ثابتة."
     },
     "زيادة وزن": {
-        "تحليل": "نحتاج لرفع معدل الحرق وتقليل السعرات الزائدة.",
-        "نصائح_غذائية": ["امنع السكر الأبيض تماماً", "استبدل الخبز الأبيض بالأسود", "اشرب كوب ماء كبير قبل كل وجبة بـ 15 دقيقة"],
-        "جدول_تمارين": "كارديو عالي الشدة (جري، سباحة، أو ركوب دراجة) 5 أيام أسبوعياً.",
-        "تحدي": "امشِ 10 آلاف خطوة النهاردة."
+        "الحالة": "نحتاج لحرق الدهون",
+        "الأكل": ["الصيام المتقطع"، "منع الخبز الأبيض والحلويات", "زيادة الألياف والخضروات المسلوقة"],
+        "الرياضة": "كارديو (جري أو سباحة) 45 دقيقة يومياً.",
+        "نصيحة_سلوكية": "امشِ 10 دقائق بعد كل وجبة."
     }
 }
 
-# 3. واجهة المستخدم (المدخلات بالأيقونات)
-st.markdown("# 🏛️ الموسوعة الصحية الذكية الشاملة")
-st.info("💡 **حكمة اليوم:** 'العقل السليم في الجسم السليم' - ابدأ الآن ولا تؤجل!")
-
-st.divider()
+# 3. الواجهة الأمامية
+st.markdown("# 🧬 المستشار الصحي: نظام تحليل البيانات الذكي")
+st.write("---")
 
 col_in1, col_in2 = st.columns(2)
 with col_in1:
-    st.subheader("👤 البيانات الشخصية")
-    name = st.text_input("اسم المستخدم:")
-    age = st.number_input("🎂 العمر:", 10, 90, 20)
-    height = st.number_input("📏 الطول (سم):", 100, 250, 170)
-    gender = st.radio("🧬 النوع:", ["ذكر", "أنثى"], horizontal=True)
+    st.subheader("👤 بياناتك")
+    name = st.text_input("الاسم:", "بطل مستقبلي")
+    age = st.number_input("العمر:", 10, 100, 25)
+    gender = st.radio("النوع:", ["ذكر", "أنثى"], horizontal=True)
+    goal = st.selectbox("🎯 هدفك الحالي:", ["تنشيف (خسارة وزن)", "تضخيم (زيادة عضلات)", "تثبيت الوزن وتحسين الصحة"])
 
 with col_in2:
-    st.subheader("📊 القياسات اليومية")
-    weight = st.number_input("⚖️ الوزن الحالي (كجم):", 30, 200, 75)
+    st.subheader("📏 القياسات")
+    height = st.number_input("الطول (سم):", 100, 250, 170)
+    weight = st.number_input("الوزن (كجم):", 30, 200, 75)
     water = st.number_input("💧 أكواب الماء:", 0, 20, 8)
     sleep = st.slider("😴 ساعات النوم:", 0, 12, 8)
-    phone = st.slider("📱 استخدام الموبايل:", 0, 16, 5)
 
-goal = st.selectbox("🎯 هدفك القادم:", ["تنشيف (حرق دهون)", "تضخيم (بناء عضلات)", "تحسين صحة عامة"])
+st.write("---")
 
-st.divider()
-
-# 4. معالجة البيانات والنتائج
-if st.button("🚀 تحليل البيانات واستخراج الحلول من الموسوعة"):
+# 4. محرك التحليل والرسوم البيانية
+if st.button("🚀 تحليل البيانات وإظهار التوقعات"):
     bmi = weight / ((height/100)**2)
     
-    # تحديد الحالة بناءً على الـ BMI
+    # اختيار الحالة
     if bmi < 18.5: status = "نحافة"
     elif bmi < 25: status = "مثالي"
     else: status = "زيادة وزن"
     
-    # سحب البيانات من الموسوعة
-    res = HEALTH_DB[status]
-    
+    res = HEALTH_DATABASE[status]
     st.balloons()
-    st.markdown(f"## 📋 التقرير الشامل للبطل {name}")
 
-    # عرض العدادات (Metrics)
-    c1, c2, c3, c4 = st.columns(4)
-    with c1: st.metric("كتلة الجسم", f"{bmi:.1f}", status)
-    with c2: st.metric("النوم", f"{sleep} س", "ممتاز" if sleep >= 7 else "ناقص")
-    with c3: st.metric("المياه", f"{water} كوب", "أحسنت" if water >= 8 else "زيدها")
-    with c4: st.metric("الموبايل", f"{phone} س", "آمن" if phone <= 4 else "مجهد")
+    # عرض النتائج في Metrics
+    st.subheader(f"📊 لوحة تحكم {name}")
+    m1, m2, m3 = st.columns(3)
+    m1.metric("كتلة الجسم (BMI)", f"{bmi:.1f}", status)
+    m2.metric("الحالة الصحية", status)
+    m3.metric("جودة النوم", f"{sleep} س", "جيد" if sleep >= 7 else "تحتاج راحة")
 
-    # 5. عرض النصائح المجمعة في بطاقات
+    # 5. الرسم البياني الديناميكي (بيتغير بناءً على البيانات)
+    st.write("### 📈 توقعات مسارك الصحي لـ 30 يوم القادمة")
+    days = list(range(1, 31))
+    
+    # حساب المسار بناءً على الوزن الفعلي والهدف
+    if "تنشيف" in goal:
+        # يتوقع خسارة 150 جرام يومياً
+        trend = [weight - (d * 0.15) for d in days]
+        label = "خسارة وزن متوقعة"
+    elif "تضخيم" in goal:
+        # يتوقع زيادة 100 جرام عضل يومياً
+        trend = [weight + (d * 0.1) for d in days]
+        label = "زيادة عضلية متوقعة"
+    else:
+        # تذبذب بسيط حول الوزن الحالي
+        trend = [weight + random.uniform(-0.5, 0.5) for _ in days]
+        label = "استقرار الوزن"
+
+    chart_df = pd.DataFrame({label: trend}, index=days)
+    st.line_chart(chart_df)
+
+    # 6. قاعدة البيانات الموسوعية (عرض الداتا)
     st.divider()
     col_res1, col_res2 = st.columns(2)
     
     with col_res1:
-        st.markdown(f'<div class="info-box"><h3>🥗 النظام الغذائي الموسوعي</h3>', unsafe_allow_html=True)
-        for tip in res["نصائح_غذائية"]:
-            st.write(f"✅ {tip}")
-        st.markdown('</div>', unsafe_allow_html=True)
+        st.markdown(f"""<div class="card-pro"><h3>🥗 خطة التغذية الموسوعية</h3>""", unsafe_allow_html=True)
+        for meal in res["الأكل"]:
+            st.write(f"🔹 {meal}")
+        st.markdown("</div>", unsafe_allow_html=True)
 
     with col_res2:
-        st.markdown(f'<div class="info-box"><h3>🏋️ خطة التدريب الاحترافية</h3>', unsafe_allow_html=True)
-        st.write(res["جدول_تمارين"])
-        st.markdown('</div>', unsafe_allow_html=True)
-
-    # 6. الرسم البياني للتوقعات (Data Visualization)
-    st.write("### 📈 توقعات مسارك الصحي (30 يوم القادمة)")
-    days = np.array(range(1, 31))
-    if "تنشيف" in goal:
-        trend = weight - (days * 0.12)
-    elif "تضخيم" in goal:
-        trend = weight + (days * 0.08)
-    else:
-        trend = [weight] * 30
-    
-    st.line_chart(pd.DataFrame({"الوزن المتوقع": trend}, index=days))
+        st.markdown(f"""<div class="card-pro"><h3>🏋️ التوصيات البدنية</h3>""", unsafe_allow_html=True)
+        st.write(f"**التمارين:** {res['الرياضة']}")
+        st.write(f"**نصيحة الخبير:** {res['نصيحة_سلوكية']}")
+        st.markdown("</div>", unsafe_allow_html=True)
 
     # 7. التحدي اليومي العشوائي
-    st.divider()
-    st.warning(f"🎯 **تحدي الـ 24 ساعة الخاص بك:** {res['تحدي']}")
-    
-    # نصيحة عشوائية إضافية لزيادة الداتا
-    extra = ["الجلوس الصحي يقلل آلام الظهر.", "الفاكهة أفضل بديل للسكريات.", "التنفس العميق يقلل التوتر."]
-    st.success(f"🌟 **نصيحة إضافية:** {random.choice(extra)}")
-    
+    extra_tips = ["امشِ 15 دقيقة بعد الأكل.", "اشرب كوب ماء كل ساعة.", "توقف عن استخدام الموبايل قبل النوم بـ 30 دقيقة."]
+    st.success(f"🎯 **تحدي اليوم:** {random.choice(extra_tips)}")
     st.snow()
