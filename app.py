@@ -1,59 +1,73 @@
 import streamlit as st
 import pandas as pd
-from streamlit_gsheets import GSheetsConnection
 
-# 1. إعدادات الصفحة
-st.set_page_config(page_title="AI Health Hub", layout="wide")
+# 1. إعدادات الصفحة الأساسية
+st.set_page_config(page_title="AI Health Tracker", page_icon="💪")
 
-# 2. قاموس البيانات (تم إصلاح المسميات لحل الـ KeyError)
-# تأكدنا أن كلمة 'تحليل' و 'نصيحة' مكتوبة بنفس الطريقة دائماً
-HEALTH_INFO = {
-    "نحافة": {"تحليل": "تحتاج لزيادة سعراتك.", "نصيحة": "ركز على البروتين."},
-    "مثالي": {"تحليل": "وزنك مثالي حالياً.", "نصيحة": "حافظ على الرياضة."},
-    "زيادة وزن": {"تحليل": "نحتاج لتنظيم الأكل.", "نصيحة": "مارس الكارديو."}
+# 2. قاموس البيانات الموحد (تم إصلاح المسميات لمنع KeyError)
+HEALTH_DB = {
+    "نحافة": {
+        "تحليل": "وزنك أقل من الطبيعي، تحتاج لزيادة السعرات الصحية.",
+        "نصيحة": "ركز على تناول الكربوهيدرات المعقدة والبروتين.",
+        "اللون": "#3b82f6"
+    },
+    "مثالي": {
+        "تحليل": "وزنك في النطاق الصحي المثالي، استمر على هذا المنوال!",
+        "نصيحة": "حافظ على التوازن بين الغذاء والنشاط البدني.",
+        "اللون": "#10b981"
+    },
+    "زيادة وزن": {
+        "تحليل": "وزنك أعلى من النطاق المثالي، يفضل البدء بنظام غذائي.",
+        "نصيحة": "قلل من السكريات المضافة وزد من شرب الماء والحركة.",
+        "اللون": "#f59e0b"
+    }
 }
 
-# 3. واجهة المستخدم
-st.title("🚀 المستشار الصحي الذكي (نسخة مستقرة)")
+# 3. واجهة المستخدم (التصميم)
+st.title("🛡️ المستشار الصحي الذكي")
+st.write("أدخل بياناتك للحصول على تحليل فوري ومسار توقع للوزن.")
 
-with st.sidebar:
-    st.header("⚙️ الإعدادات")
-    url = st.text_input("رابط جوجل شيت (اختياري):")
+with st.form("health_form"):
+    name = st.text_input("👤 الاسم:")
+    col1, col2 = st.columns(2)
+    with col1:
+        weight = st.number_input("⚖️ الوزن (كجم):", 30.0, 200.0, 70.0)
+    with col2:
+        height = st.number_input("📏 الطول (سم):", 100, 250, 170)
+    
+    goal = st.selectbox("🎯 هدفك:", ["خسارة وزن", "بناء عضلات", "صحة عامة"])
+    submit = st.form_submit_button("إصدار التقرير")
 
-# إدخال البيانات
-name = st.text_input("👤 الاسم:")
-c1, c2 = st.columns(2)
-with c1:
-    weight = st.number_input("⚖️ الوزن (كجم):", 30.0, 200.0, 70.0)
-with c2:
-    height = st.number_input("📏 الطول (سم):", 100, 250, 170)
-
-# 4. محرك التشغيل
-if st.button("🏁 ابدأ التحليل الآن"):
+# 4. محرك التحليل
+if submit:
     if not name:
-        st.error("يرجى كتابة الاسم أولاً")
+        st.warning("يرجى إدخال اسمك.")
     else:
-        # حساب BMI
+        # حساب مؤشر كتلة الجسم BMI
         bmi = weight / ((height/100)**2)
+        
+        # تحديد الحالة (Logic)
         if bmi < 18.5: status = "نحافة"
         elif bmi < 25: status = "مثالي"
         else: status = "زيادة وزن"
         
-        # استدعاء البيانات (بدون أخطاء Key Error)
-        my_data = HEALTH_INFO[status]
-        
-        st.balloons()
-        st.success(f"عاش يا {name}! تم استخراج تقريرك:")
+        # جلب البيانات من القاموس (بدون KeyError)
+        data = HEALTH_DB[status]
         
         # عرض النتائج
-        st.metric("مؤشر كتلة الجسم", f"{bmi:.1f}", status)
-        st.info(f"🔬 **التحليل:** {my_data['تحليل']}")
-        st.warning(f"💡 **نصيحة:** {my_data['نصيحة']}")
+        st.balloons()
+        st.success(f"أهلاً بك يا {name}! إليك تقريرك:")
         
-        # رسم بياني بسيط (يستخدم مكتبة ستريمليت الأساسية لمنع أخطاء التسطيب)
-        st.write("### 📈 توقعات تغير الوزن (30 يوم)")
-        trend = [weight + (i * 0.05) for i in range(30)]
-        st.line_chart(trend)
+        st.metric("مؤشر كتلة جسمك (BMI)", f"{bmi:.1f}", status)
+        
+        st.info(f"🔬 **التحليل:** {data['تحليل']}")
+        st.warning(f"💡 **نصيحة الخبراء:** {data['نصيحة']}")
+        
+        # 5. رسم بياني بسيط (باستخدام مكتبة ستريمليت الأساسية فقط)
+        st.subheader("📈 مسار الوزن المتوقع (30 يوم)")
+        change = -0.15 if goal == "خسارة وزن" else 0.1 if goal == "بناء عضلات" else 0.02
+        predictions = [weight + (i * change) for i in range(30)]
+        st.line_chart(predictions)
 
-        if url:
-            st.toast("قاعدة البيانات متصلة وجاهزة للحفظ ✅")
+else:
+    st.info("قم بملء النموذج أعلاه واضغط على زر التقرير.")
