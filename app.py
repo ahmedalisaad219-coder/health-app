@@ -2,162 +2,130 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import random
+import time
 
-# 1. إعدادات الصفحة
-st.set_page_config(page_title="المستشار الصحي الذكي 2026", page_icon="🌿", layout="wide")
+# 1. إعدادات الصفحة الفاخرة
+st.set_page_config(page_title="AI Health Expert 2026", page_icon="🧬", layout="wide")
 
-# تصميم CSS (ألوان فاتحة، كلام واضح، تصميم عصري)
+# تصميم CSS (ألوان مريحة، كلام واضح جداً، وبطاقات عصرية)
 st.markdown("""
     <style>
-    .stApp {
-        background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
-    }
-    .main-card {
-        background: rgba(255, 255, 255, 0.9);
-        border-radius: 25px;
-        padding: 30px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-        border: 1px solid #e2e8f0;
-        margin-bottom: 20px;
-    }
-    .metric-box {
-        background: white;
-        border-radius: 15px;
-        padding: 20px;
-        text-align: center;
-        border-bottom: 4px solid #3b82f6;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.02);
-    }
-    h1 { color: #1e293b; font-weight: 800; text-align: center; }
-    h3 { color: #334155; }
-    .stButton>button {
-        background: linear-gradient(90deg, #3b82f6 0%, #10b981 100%);
-        color: white !important;
-        border-radius: 50px;
-        font-weight: bold;
-        border: none;
-        padding: 10px 20px;
-        width: 100%;
-        transition: 0.3s;
-    }
-    .stButton>button:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(59,130,246,0.3); }
+    .stApp { background: #fdfdfd; }
+    .hero-section { background: linear-gradient(90deg, #1e3a8a 0%, #3b82f6 100%); padding: 40px; border-radius: 20px; color: white; text-align: center; margin-bottom: 30px; }
+    .glass-card { background: white; border-radius: 20px; padding: 25px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); border-left: 8px solid #3b82f6; margin-bottom: 20px; }
+    .tip-box { background: #f0fdf4; border: 1px solid #bbf7d0; padding: 15px; border-radius: 12px; margin: 10px 0; color: #166534; }
+    h1, h2, h3 { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    .stButton>button { background: #1e3a8a; color: white !important; border-radius: 50px; height: 50px; font-size: 18px; width: 100%; transition: 0.3s; }
+    .stButton>button:hover { background: #3b82f6; transform: scale(1.02); }
     </style>
     """, unsafe_allow_html=True)
 
-# 2. الموسوعة الصحية الموسعة (بيانات ضخمة ومنظمة)
-HEALTH_ENCYCLOPEDIA = {
-    "خسارة دهون": {
-        "التحليل": "هدفك هو حرق الدهون مع الحفاظ على العضلات. نحتاج لعجز سعرات ذكي.",
-        "النظام_الغذائي": [
-            "الصيام المتقطع (16 ساعة صيام، 8 ساعات أكل).",
-            "زيادة حصة الألياف (نصف طبق سلطة في كل وجبة).",
-            "استبدال الكربوهيدرات البسيطة بالمعقدة (كينوا، شوفان، فريك).",
-            "شرب لتر مياه لكل 30 كجم من وزنك."
-        ],
-        "خطة_النشاط": "تمارين الكارديو (مشي سريع) قبل الفطار، وتمارين مقاومة خفيفة مساءً.",
-        "نصيحة_ذهبية": "النوم قبل الساعة 11 مساءً يعزز حرق الدهون بنسبة 20%."
+# 2. الموسوعة الضخمة (البيانات الشاملة)
+DATABASE = {
+    "نحافة": {
+        "التحليل": "جسمك يحتاج لزيادة كثافة الأنسجة. أنت في مرحلة بناء القاعدة.",
+        "التغذية": ["زد السعرات بنسبة 20% من مصادر بروتين صافية.", "تناول المكسرات وزيت الزيتون والأفوكادو يومياً.", "اجعل الوجبات 5 وجبات صغيرة لسهولة الهضم."],
+        "التمارين": "تمارين القوة (رفع أثقال) بمدات راحة طويلة (90 ثانية) بين المجموعات.",
+        "الصحة_النفسية": "مارس تمارين التنفس لتقليل التوتر الذي قد يحرق سعراتك بسرعة.",
+        "التفاعل": "snow"
     },
-    "بناء عضلات": {
-        "التحليل": "هدفك هو بناء أنسجة عضلية قوية. نحتاج لفائض سعرات مدروس وبروتين كافٍ.",
-        "النظام_الغذائي": [
-            "تناول 1.6 جرام بروتين لكل كيلو من وزنك.",
-            "وجبة كربوهيدرات سريعة قبل التمرين بـ 45 دقيقة (موز أو تمر).",
-            "إضافة الدهون الصحية (أفوكادو، مكسرات) لزيادة الطاقة.",
-            "توزيع الوجبات على 4-5 وجبات يومياً."
-        ],
-        "خطة_النشاط": "رفع أثقال بجدول (Push/Pull/Legs) مع راحة كافية للعضلات.",
-        "نصيحة_ذهبية": "شرب المياه بين المجموعات التدريبية يحافظ على ضخ الدم للعضلات."
+    "مثالي": {
+        "التحليل": "أنت في القمة! هدفنا الآن هو صقل التفاصيل وتحسين اللياقة القلبية.",
+        "التغذية": ["حافظ على توازن الماكروز (بروتين 30%، كارب 40%، دهون 30%).", "استخدم الصيام المتقطع للحفاظ على حساسية الأنسولين.", "ركز على مضادات الأكسدة (التوت، الشاي الأخضر)."],
+        "التمارين": "تمارين الـ Crossfit أو نظام الهجين (قوة + كارديو) 4 أيام أسبوعياً.",
+        "الصحة_النفسية": "التأمل الصباحي لمدة 10 دقائق سيزيد من تركيزك في التمرين.",
+        "التفاعل": "balloons"
     },
-    "صحة عامة": {
-        "التحليل": "هدفك هو تحسين جودة الحياة والنشاط اليومي والوقاية من الأمراض.",
-        "النظام_الغذائي": [
-            "نظام 'طبق الأكل الصحي' (بروتين، نشويات، خضروات).",
-            "تقليل السكر المضاف للمشروبات تدريجياً.",
-            "تناول الفاكهة الموسمية كمصدر أساسي للفيتامينات.",
-            "الحرص على تناول الأسماك مرتين أسبوعياً."
-        ],
-        "خطة_النشاط": "المشي لمدة 30 دقيقة يومياً مع تمارين إطالة (Stretch) صباحاً.",
-        "نصيحة_ذهبية": "تجنب الجلوس المستمر لأكثر من ساعة؛ تحرك لمدة دقيقتين."
+    "زيادة وزن": {
+        "التحليل": "الجسم في حالة تخزين. سنقوم الآن بتشغيل محركات الحرق الطبيعية.",
+        "التغذية": ["امنع السكريات المضافة والمشروبات الغازية تماماً.", "ابدأ وجبتك دائماً بالخضروات الورقية لتقليل الامتصاص.", "استبدل الأرز الأبيض بالبطاطس المسلوقة أو الكينوا."],
+        "التمارين": "تمارين HIIT (عالية الكثافة) مع مشي سريع 10 آلاف خطوة يومياً.",
+        "الصحة_النفسية": "النوم الكافي هو مفتاح حرق الدهون؛ نقص النوم يرفع هرمون الجوع.",
+        "التفاعل": "celebrate"
     }
 }
 
-# 3. واجهة المستخدم
-st.markdown("<h1>🌿 AI Global Health Tracker</h1>", unsafe_allow_html=True)
-st.write("<p style='text-align:center; color:#64748b;'>مستشارك الشخصي المطور لتحسين الأداء الحيوي</p>", unsafe_allow_html=True)
+# 3. الهيكل الرئيسي للموقع
+st.markdown('<div class="hero-section"><h1>🛡️ نظام المستشار الصحي الذكي المتكامل</h1><p>إصدار 2026 - تكنولوجيا تحليل الأداء البشري</p></div>', unsafe_allow_html=True)
 
+# المدخلات المنظمة
 with st.container():
-    st.markdown('<div class="main-card">', unsafe_allow_html=True)
-    c1, c2, c3 = st.columns(3)
-    with c1:
-        name = st.text_input("👤 اسم البطل")
-        age = st.number_input("🎂 العمر", 10, 100, 20)
-    with c2:
-        weight = st.number_input("⚖️ الوزن (كجم)", 30, 200, 70)
-        height = st.number_input("📏 الطول (سم)", 100, 250, 170)
-    with c3:
-        goal = st.selectbox("🎯 الهدف المرجو", ["خسارة دهون", "بناء عضلات", "صحة عامة"])
-        water = st.slider("💧 أكواب الماء يومياً", 0, 20, 8)
-    
-    st.markdown("---")
-    cc1, cc2 = st.columns(2)
-    with cc1: sleep = st.select_slider("😴 ساعات النوم", options=list(range(0, 13)), value=8)
-    with cc2: phone = st.select_slider("📱 ساعات الموبايل", options=list(range(0, 17)), value=5)
-    st.markdown('</div>', unsafe_allow_html=True)
+    col1, col2 = st.columns(2)
+    with col1:
+        st.markdown("### 👤 الملف الشخصي")
+        name = st.text_input("اسم المستخدم:")
+        age = st.number_input("العمر:", 10, 100, 25)
+        gender = st.radio("النوع:", ["ذكر", "أنثى"], horizontal=True)
+    with col2:
+        st.markdown("### 📊 القياسات الحيوية")
+        weight = st.number_input("الوزن الحالي (كجم):", 30, 200, 75)
+        height = st.number_input("الطول الكلي (سم):", 100, 250, 175)
+        goal = st.selectbox("🎯 المسار المختار:", ["تنشيف وحرق", "بناء وضخامة", "صحة واستدامة"])
 
-# 4. محرك التحليل
-if st.button("🚀 إصدار التقرير التفاعلي الشامل"):
+st.markdown("---")
+st.markdown("### 🌙 عاداتك خلال الـ 24 ساعة الماضية")
+c1, c2, c3 = st.columns(3)
+with c1: water = st.select_slider("💧 أكواب الماء:", options=list(range(21)), value=8)
+with c2: sleep = st.select_slider("😴 ساعات النوم:", options=list(range(13)), value=7)
+with c3: phone = st.select_slider("📱 استخدام الموبايل:", options=list(range(17)), value=5)
+
+# 4. محرك التحليل الذكي
+if st.button("🏁 بدء بروتوكول التحليل العميق"):
     if not name:
-        st.error("يرجى كتابة الاسم لتفعيل التقرير.")
+        st.error("⚠️ يرجى إدخال اسم المستخدم لتشغيل المحرك.")
     else:
+        with st.spinner('جاري تحليل البيانات ومطابقتها مع الموسوعة...'):
+            time.sleep(1.5) # محاكاة تفكير الذكاء الاصطناعي
+            
         bmi = weight / ((height/100)**2)
-        st.balloons()
+        if bmi < 18.5: status = "نحافة"
+        elif bmi < 25: status = "مثالي"
+        else: status = "زيادة وزن"
         
-        # قسم النتائج بالألوان الواضحة
-        st.markdown(f"### 📋 ملف تحليل: {name}")
+        data = DATABASE[status]
         
-        col_res1, col_res2, col_res3, col_res4 = st.columns(4)
+        # التفاعلات المتغيرة (مش بالونات بس)
+        if data["التفاعل"] == "snow": st.snow()
+        elif data["التفاعل"] == "balloons": st.balloons()
+        else: 
+            st.balloons()
+            st.toast("تهانينا! تقريرك جاهز الآن", icon="🔥")
+
+        st.markdown(f"## 📊 التقرير الصحي الشامل لـ {name}")
+        
+        # العدادات التفاعلية
+        r1, r2, r3, r4 = st.columns(4)
+        r1.metric("كتلة الجسم", f"{bmi:.1f}", status)
+        r2.metric("معدل الأيض", f"{int(10*weight+6.25*height-5*age)}", "سعرة")
+        
+        health_score = (water*5) + (sleep*8) - (phone*4)
+        r3.metric("سكور العادات", f"{health_score}%", "جيد" if health_score > 60 else "ضعيف")
+        r4.metric("الحالة", status)
+
+        st.divider()
+
+        # عرض الداتا الموسوعية بشكل شيك
+        col_res1, col_res2 = st.columns([1.2, 1])
+        
         with col_res1:
-            st.markdown(f'<div class="metric-box"><h3>⚖️ BMI</h3><h2>{bmi:.1f}</h2></div>', unsafe_allow_html=True)
-        with col_res2:
-            status = "نحافة" if bmi < 18.5 else "مثالي" if bmi < 25 else "زيادة وزن"
-            st.markdown(f'<div class="metric-box"><h3>📊 الحالة</h3><h2>{status}</h2></div>', unsafe_allow_html=True)
-        with col_res3:
-            score = (water*5) + (sleep*8) - (phone*4)
-            st.markdown(f'<div class="metric-box"><h3>⭐ سكور</h3><h2>{score}%</h2></div>', unsafe_allow_html=True)
-        with col_res4:
-            st.markdown(f'<div class="metric-box"><h3>🔥 حرق</h3><h2>{int(10*weight+6.25*height)}</h2></div>', unsafe_allow_html=True)
-
-        st.divider()
-
-        # الداتا التفاعلية (الرسوم والموسوعة)
-        data_col1, data_col2 = st.columns([1.2, 1])
-        
-        with data_col1:
-            st.markdown("### 📈 توقعات المسار (30 يوم القادمة)")
+            st.markdown(f'<div class="glass-card"><h3>🔬 التحليل البيولوجي</h3><p>{data["تحليل"]}</p></div>', unsafe_allow_html=True)
+            st.markdown("### 📈 مسار التوقع المستقبلي")
             days = list(range(1, 31))
-            if "خسارة" in goal: trend = [weight - (d * 0.12) for d in days]
-            elif "بناء" in goal: trend = [weight + (d * 0.08) for d in days]
-            else: trend = [weight + np.sin(d)*0.3 for d in days]
+            if "تنشيف" in goal: trend = [weight - (d * 0.15) for d in days]
+            elif "بناء" in goal: trend = [weight + (d * 0.1) for d in days]
+            else: trend = [weight + np.sin(d)*0.4 for d in days]
+            st.line_chart(pd.DataFrame({"الوزن": trend}, index=days))
+
+        with col_res2:
+            st.markdown("### 🥗 الخطة الغذائية الموسوعية")
+            for item in data["التغذية"]:
+                st.markdown(f'<div class="tip-box">✅ {item}</div>', unsafe_allow_html=True)
             
-            df = pd.DataFrame({"الوزن": trend}, index=days)
-            st.line_chart(df)
-            
-        with data_col2:
-            info = HEALTH_ENCYCLOPEDIA[goal]
-            st.markdown(f"### 🥗 موسوعة التغذية لـ {goal}")
-            st.info(info["التحليل"])
-            for tip in info["النظام_الغذائي"]:
-                st.write(f"✅ {tip}")
+            st.markdown("### 🏋️ التوصية الرياضية")
+            st.success(data["الرياضة"])
+            st.info(f"🧘 **نصيحة نفسية:** {data['الصحة_النفسية']}")
 
         st.divider()
-        
-        # إضافات تفاعلية أخيرة
-        fin_c1, fin_c2 = st.columns(2)
-        with fin_c1:
-            st.success(f"🏋️ **البرنامج الرياضي:** {info['خطة_النشاط']}")
-        with fin_c2:
-            st.warning(f"💡 **نصيحة الموسوعة:** {info['نصيحة_ذهبية']}")
-        
-        st.snow()
+        st.write(f"🎉 تم استخراج هذا التقرير بناءً على هدفك: **{goal}**. حافظ على الاستمرار!")
 else:
-    st.info("👋 أهلاً بك يا بطل! املأ بياناتك واضغط على الزر بالأعلى للحصول على تقريرك الاحترافي.")
+    st.info("👋 مرحباً بك في نظامك الصحي. أدخل بياناتك بالأعلى واضغط على الزر لبدء الرحلة.")
