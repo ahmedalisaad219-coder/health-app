@@ -1,90 +1,97 @@
 import streamlit as st
+import pandas as pd
+import numpy as np
 
-# 1. إعدادات الصفحة
-st.set_page_config(page_title="المستشار الصحي الذكي", page_icon="🏆", layout="wide")
+# 1. إعدادات متقدمة
+st.set_page_config(page_title="AI Health Coach", page_icon="🧬", layout="wide")
 
 st.markdown("""
     <style>
-    .main { background-color: #f4f7f6; }
-    .card { background-color: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.08); text-align: center; margin-bottom: 15px; border-top: 5px solid #2E7D32; }
-    h1 { color: #1B5E20; text-align: center; font-weight: bold; }
-    .stButton>button { background: linear-gradient(45deg, #2E7D32, #4CAF50); color: white; font-weight: bold; border-radius: 25px; height: 3em; }
+    .main { background-color: #f0f4f8; }
+    .stMetric { background-color: white; padding: 15px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+    .css-145vsf3 { border-radius: 20px; }
+    .card-pro { background: white; padding: 25px; border-radius: 20px; border-left: 8px solid #007bff; box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
     </style>
     """, unsafe_allow_html=True)
 
-# البداية التحفيزية
-st.markdown("# 🛡️ نظامك الصحي المتكامل")
-st.markdown("<h4 style='text-align: center; color: #555;'>صناعة بطل: طريقك نحو حياة أفضل يبدأ من هنا</h4>", unsafe_allow_html=True)
+# 2. الهيدر
+st.markdown("# 🧬 نظام الذكاء الصحي المتكامل")
+st.write("---")
 
-st.divider()
+# 3. المدخلات الذكية
+with st.sidebar:
+    st.image("https://cdn-icons-png.flaticon.com/512/3843/3843184.png", width=100)
+    st.header("مركز التحكم")
+    name = st.text_input("👤 اسم البطل:", "أحمد")
+    age = st.number_input("🎂 العمر:", 10, 100, 20)
+    gender = st.selectbox("🧬 الجنس:", ["ذكر", "أنثى"])
+    weight = st.number_input("⚖️ الوزن الحالي (كجم):", 30, 200, 75)
+    height = st.number_input("📏 الطول (سم):", 100, 250, 170)
+    goal = st.selectbox("🎯 هدفك:", ["خسارة وزن", "بناء عضلات", "تحسين لياقة"])
 
-# المدخلات المنظمة
-col_in1, col_in2 = st.columns(2)
+# 4. لوحة البيانات
+col1, col2, col3 = st.columns([1, 1, 1])
 
-with col_in1:
-    st.markdown("### 👤 البيانات الأساسية")
-    name = st.text_input("ما هو اسمك يا بطل؟")
-    age = st.number_input("🎂 عمرك الآن:", 10, 100, 20)
-    gender = st.radio("🧬 الجنس:", ["ذكر", "أنثى"], horizontal=True)
+with col1:
+    st.markdown("### 📱 التكنولوجيا")
+    phone = st.slider("ساعات الموبايل:", 0, 16, 5)
+    water = st.number_input("💧 أكواب الماء:", 0, 20, 8)
 
-with col_in2:
-    st.markdown("### 📊 القياسات الحيوية")
-    height = st.number_input("📏 طولك (سم):", 100, 250, 170)
-    weight = st.number_input("⚖️ وزنك (كجم):", 30, 200, 75)
-    activity = st.selectbox("🏃 مستوى نشاطك:", ["خامل (لا رياضة)", "نشاط خفيف", "نشاط متوسط", "رياضي جداً"])
+with col2:
+    st.markdown("### 😴 الراحة")
+    sleep = st.slider("ساعات النوم:", 0, 12, 8)
+    stress = st.select_slider("🤯 مستوى الإرهاق:", options=["منخفض", "متوسط", "مرتفع"])
 
-st.divider()
+with col3:
+    st.markdown("### 🏃 النشاط")
+    workout = st.number_input("أيام الرياضة أسبوعياً:", 0, 7, 3)
 
-st.markdown("### 🌙 العادات اليومية")
-c1, c2, c3 = st.columns(3)
-with c1: water = st.number_input("💧 أكواب الماء:", 0, 20, 8)
-with c2: sleep = st.slider("😴 ساعات النوم:", 0, 12, 8)
-with c3: phone = st.slider("📱 ساعات الموبايل:", 0, 16, 5)
+st.write("---")
 
-if st.button("🚀 تحليل حالتي الصحية الآن"):
+if st.button("🌟 تحليل البيانات وإنشاء الخطة"):
     bmi = weight / ((height/100)**2)
     
-    # حساب السعرات الحرارية التقريبي (BMR)
-    if gender == "ذكر":
-        bmr = 10 * weight + 6.25 * height - 5 * age + 5
-    else:
-        bmr = 10 * weight + 6.25 * height - 5 * age - 161
-        
-    st.balloons()
-    st.markdown(f"## ✨ النتائج النهائية للبطل {name}")
-
-    # عرض النتائج في بطاقات
-    r1, r2, r3, r4 = st.columns(4)
+    # حساب السعرات
+    bmr = (10 * weight) + (6.25 * height) - (5 * age) + (5 if gender == "ذكر" else -161)
     
-    with r1:
-        st.markdown('<div class="card">', unsafe_allow_html=True)
-        st.write("### ⚖️")
-        st.write("**كتلة الجسم**")
-        st.write(f"{bmi:.1f}")
-        st.markdown('</div>', unsafe_allow_html=True)
+    st.balloons()
+    
+    # عرض النتائج بشكل مودرن
+    st.subheader(f"📊 لوحة تحكم الصحة لـ {name}")
+    
+    m1, m2, m3, m4 = st.columns(4)
+    m1.metric("كتلة الجسم", f"{bmi:.1f}", "مثالي" if 18.5 < bmi < 25 else "انتبه")
+    m2.metric("السعرات الأساسية", f"{int(bmr)}")
+    m3.metric("هدف المياه", "8 أكواب", f"{water-8}")
+    m4.metric("ساعات الموبايل", f"{phone} س", "-2" if phone > 4 else "أحسنت")
 
-    with r2:
-        st.markdown('<div class="card">', unsafe_allow_html=True)
-        st.write("### 🍎")
-        st.write("**السعرات المطلوبة**")
-        st.write(f"{int(bmr)} سعرة")
-        st.markdown('</div>', unsafe_allow_html=True)
+    # 5. ميزة التنبؤ بالمستقبل (الرسم البياني)
+    st.write("### 📈 التوقعات المستقبلية (خلال 30 يوم)")
+    
+    days = np.array(range(1, 31))
+    # معادلة بسيطة للتوقع بناءً على الهدف
+    if goal == "خسارة وزن":
+        predicted_weight = weight - (days * 0.1)  # يتوقع خسارة 3 كيلو في الشهر
+    elif goal == "بناء عضلات":
+        predicted_weight = weight + (days * 0.05) # يتوقع زيادة عضلية بسيطة
+    else:
+        predicted_weight = [weight] * 30
+        
+    chart_data = pd.DataFrame({
+        'اليوم': days,
+        'الوزن المتوقع': predicted_weight
+    }).set_index('اليوم')
+    
+    st.line_chart(chart_data)
+    st.caption("ملاحظة: هذه التوقعات تعتمد على التزامك بالخطة الغذائية والرياضية.")
 
-    with r3:
-        st.markdown('<div class="card">', unsafe_allow_html=True)
-        st.write("### 😴")
-        st.write("**جودة النوم**")
-        st.write("ممتاز" if sleep >= 7 else "ناقص")
-        st.markdown('</div>', unsafe_allow_html=True)
-
-    with r4:
-        st.markdown('<div class="card">', unsafe_allow_html=True)
-        st.write("### 📱")
-        st.write("**إجهاد العين**")
-        st.write("منخفض" if phone <= 4 else "مرتفع")
-        st.markdown('</div>', unsafe_allow_html=True)
-
-    # النصيحة الذهبية
-    st.divider()
-    st.info(f"💡 **نصيحتك المخصصة:** يا {name}، جسمك يحتاج لحوالي {int(bmr)} سعرة حرارية ليعمل بكفاءة. حافظ على شرب الماء بانتظام وقلل ساعات الموبايل قبل النوم بـ 30 دقيقة لتحسين تركيزك.")
+    # 6. التوصيات النهائية
+    st.markdown(f"""
+    <div class="card-pro">
+        <h3>💡 نصيحة الـ AI المخصصة:</h3>
+        يا {name}، بناءً على بياناتك، أنت تحتاج لشرب {max(8, water)} أكواب ماء لتعويض المجهود. 
+        بما أن هدفك هو <b>{goal}</b>، ننصحك بتقليل استخدام الموبايل قبل النوم بـ 60 دقيقة 
+        لرفع هرمون النمو الطبيعي في جسمك.
+    </div>
+    """, unsafe_allow_html=True)
     st.snow()
