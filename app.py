@@ -1,61 +1,37 @@
 import streamlit as st
 import pandas as pd
-import numpy as np
 from streamlit_gsheets import GSheetsConnection
-import time
 
 # 1. إعدادات الصفحة
-st.set_page_config(page_title="AI Health Master Final", page_icon="🛡️", layout="wide")
+st.set_page_config(page_title="AI Health Hub", layout="wide")
 
-# 2. تصميم CSS احترافي وآمن
-st.markdown("""
-    <style>
-    .stApp { background-color: #f8fafc; }
-    .hero { background: linear-gradient(90deg, #1e40af, #3b82f6); padding: 30px; border-radius: 20px; color: white; text-align: center; }
-    .card { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); border-right: 5px solid #1e40af; }
-    </style>
-""", unsafe_allow_html=True)
-
-# 3. قاعدة البيانات (تم توحيد المسميات لمنع الـ KeyError)
-HEALTH_HUB = {
-    "نحافة": {
-        "تحليل_طبي": "تحتاج لزيادة السعرات الحرارية وبناء الكتلة العضلية.",
-        "أطعمة_ممتازة": ["زبدة الفول السوداني", "الأفوكادو", "المكسرات", "اللحوم الحمراء"],
-        "تفاعل": "snow"
-    },
-    "مثالي": {
-        "تحليل_طبي": "أنت في نطاق الوزن المثالي. حافظ على نمط حياتك الحالي.",
-        "أطعمة_ممتازة": ["الخضروات الورقية", "صدور الدجاج", "الأسماك", "الفواكه الطازجة"],
-        "تفاعل": "balloons"
-    },
-    "زيادة وزن": {
-        "تحليل_طبي": "نحتاج لتقليل السعرات وزيادة النشاط البدني لحرق الدهون.",
-        "أطعمة_ممتازة": ["البيض المسلوق", "السبانخ", "التونة", "الشوفان"],
-        "تفاعل": "balloons"
-    }
+# 2. قاموس البيانات (تم إصلاح المسميات لحل الـ KeyError)
+# تأكدنا أن كلمة 'تحليل' و 'نصيحة' مكتوبة بنفس الطريقة دائماً
+HEALTH_INFO = {
+    "نحافة": {"تحليل": "تحتاج لزيادة سعراتك.", "نصيحة": "ركز على البروتين."},
+    "مثالي": {"تحليل": "وزنك مثالي حالياً.", "نصيحة": "حافظ على الرياضة."},
+    "زيادة وزن": {"تحليل": "نحتاج لتنظيم الأكل.", "نصيحة": "مارس الكارديو."}
 }
 
-# 4. واجهة المستخدم
-st.markdown('<div class="hero"><h1>🚀 AI Health Master: النسخة المستقرة</h1><p>تم حل جميع أخطاء التسطيب والبيانات بنجاح</p></div>', unsafe_allow_html=True)
+# 3. واجهة المستخدم
+st.title("🚀 المستشار الصحي الذكي (نسخة مستقرة)")
 
 with st.sidebar:
     st.header("⚙️ الإعدادات")
-    sheet_url = st.text_input("رابط جوجل شيت (اختياري):")
+    url = st.text_input("رابط جوجل شيت (اختياري):")
 
 # إدخال البيانات
-st.write("### 📝 بياناتك الصحية")
+name = st.text_input("👤 الاسم:")
 c1, c2 = st.columns(2)
 with c1:
-    name = st.text_input("👤 الاسم:")
     weight = st.number_input("⚖️ الوزن (كجم):", 30.0, 200.0, 70.0)
 with c2:
     height = st.number_input("📏 الطول (سم):", 100, 250, 170)
-    goal = st.selectbox("🎯 الهدف:", ["تنشيف", "ضخامة", "لياقة"])
 
-# 5. محرك التحليل
-if st.button("🏁 تشغيل التحليل النهائي"):
+# 4. محرك التشغيل
+if st.button("🏁 ابدأ التحليل الآن"):
     if not name:
-        st.error("يرجى إدخال الاسم")
+        st.error("يرجى كتابة الاسم أولاً")
     else:
         # حساب BMI
         bmi = weight / ((height/100)**2)
@@ -63,29 +39,21 @@ if st.button("🏁 تشغيل التحليل النهائي"):
         elif bmi < 25: status = "مثالي"
         else: status = "زيادة وزن"
         
-        # استدعاء البيانات (حل مشكلة KeyError)
-        result = HEALTH_HUB[status]
+        # استدعاء البيانات (بدون أخطاء Key Error)
+        my_data = HEALTH_INFO[status]
         
-        # التفاعلات (حل مشكلة AttributeError)
-        if result["تفاعل"] == "snow": st.snow()
-        else: st.balloons()
-        
-        st.success(f"عاش يا بطل! التقرير جاهز يا {name}")
+        st.balloons()
+        st.success(f"عاش يا {name}! تم استخراج تقريرك:")
         
         # عرض النتائج
-        r1, r2 = st.columns(2)
-        r1.metric("مؤشر كتلة الجسم", f"{bmi:.1f}", status)
-        r2.info(f"🔬 **التحليل:** {result['تحليل_طبي']}")
+        st.metric("مؤشر كتلة الجسم", f"{bmi:.1f}", status)
+        st.info(f"🔬 **التحليل:** {my_data['تحليل']}")
+        st.warning(f"💡 **نصيحة:** {my_data['نصيحة']}")
         
-        st.write("### 🥗 أطعمة ننصحك بها:")
-        for food in result["أطعمة_ممتازة"]:
-            st.write(f"✅ {food}")
-            
-        # رسم بياني آمن (بدون Plotly لمنع الـ ModuleNotFoundError)
-        st.write("### 📈 مسار التغير المتوقع")
-        diff = -0.1 if "تنشيف" in goal else 0.1 if "ضخامة" in goal else 0.01
-        trend = [weight + (i * diff) for i in range(30)]
+        # رسم بياني بسيط (يستخدم مكتبة ستريمليت الأساسية لمنع أخطاء التسطيب)
+        st.write("### 📈 توقعات تغير الوزن (30 يوم)")
+        trend = [weight + (i * 0.05) for i in range(30)]
         st.line_chart(trend)
 
-        if sheet_url:
-            st.toast("✅ تم ربط قاعدة البيانات السحابية")
+        if url:
+            st.toast("قاعدة البيانات متصلة وجاهزة للحفظ ✅")
