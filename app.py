@@ -1,130 +1,105 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
+from datetime import datetime
 
-# 1. إعداد الصفحة
-st.set_page_config(page_title="الموسوعة الصحية الشاملة للجميع", page_icon="📖", layout="wide")
+# 1. إعدادات المنصة
+st.set_page_config(page_title="مساعد ابن البلد الذكي", page_icon="💰", layout="wide")
 
-# 2. تصميم "الوضوح العالي" (ألوان مريحة وكلام عريض)
+# 2. التنسيق البصري (High Visibility & Clean Design)
 st.markdown("""
     <style>
     .stApp { background-color: #ffffff; color: #1a1a1a; }
     .header-box {
-        background: #065f46; padding: 40px; border-radius: 15px;
-        text-align: center; color: white; margin-bottom: 25px;
+        background: #065f46; padding: 25px; border-radius: 15px;
+        text-align: center; color: white; margin-bottom: 20px;
     }
-    .encyclo-section {
-        background: #f8fafc; padding: 25px; border-radius: 15px;
-        border-right: 10px solid #065f46; margin-bottom: 20px;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    .budget-card {
+        background: #f0fdf4; padding: 20px; border-radius: 15px;
+        border: 2px solid #16a34a; margin-bottom: 20px;
     }
-    .solution-item {
-        background: #fffbeb; padding: 15px; border-radius: 10px;
-        border: 1px solid #fbbf24; margin-bottom: 10px;
+    .routine-card {
+        background: #fff7ed; padding: 20px; border-radius: 15px;
+        border: 2px solid #ea580c; margin-bottom: 20px;
     }
-    h1, h2, h3 { font-weight: 900 !important; }
-    p, li, b { font-size: 19px !important; line-height: 1.8; }
+    .info-section {
+        background: #f8fafc; padding: 20px; border-radius: 12px;
+        border-right: 8px solid #065f46; margin-bottom: 15px;
+    }
+    h1, h2, h3 { font-weight: 900 !important; color: #064e3b; }
+    p, b, li { font-size: 19px !important; line-height: 1.7; }
+    .stButton>button { background: #065f46; color: white !important; font-weight: bold; border-radius: 10px; }
     </style>
 """, unsafe_allow_html=True)
 
-# 3. الموسوعة العملاقة (أكل شعبي، حلول، تمارين)
-MASTER_ENCYCLOPEDIA = {
-    "نحافة": {
-        "تشخيص": "جسمك يحتاج لبناء أساس قوي (عظم وعضل). سنعتمد على 'خيرات الأرض' المتاحة.",
-        "موسوعة_الأكل": {
-            "النشويات (الطاقة)": "عيش بلدي، فريك، قمح بليلة، أرز بالسمن البلدي، مكرونة، بطاطس مشوية، كسكسي.",
-            "البروتين (البناء)": "بيض بلدي، جبنة قريش، عدس بجبه، بصارة، لوبيا، كبد وقوانص، سمك ماكريل، فراخ بيضا.",
-            "الدهون الصحية": "طحينة، زيت حار، سمن بلدي (بكمية معقولة)، سوداني، سمسم.",
-            "السكريات الطبيعية": "عسل أسود، تمر، تين، عجوة، حلاوة طحينية (قطعة صغيرة)."
-        },
-        "حلول_موسوعية": {
-            "سد النفس": "شرب الحلبة أو اليانسون بعد الأكل، وتناول مخلل بسيط لفتح الشهية.",
-            "ضعف الميزانية": "الاعتماد على الكشري المصري والعدس الأصفر؛ بروتين كامل وأرخص من اللحم.",
-            "قوة العظام": "شرب اللبن الجاموسي أو الرايب وتناول 'المش' (بدون شطة زيادة) كمصدر للبروبيوتيك."
-        },
-        "التمارين_الشعبية": ["شيل أحمال خفيفة (جراكن مياه)", "تمارين السكوات (القرفصاء)", "المشي السريع في هواء نقي"]
-    },
-    "مثالي": {
-        "تشخيص": "الحفاظ على القوة والنشاط الدائم دون زيادة في الوزن.",
-        "موسوعة_الأكل": {
-            "النشويات": "عيش بلدي (ردة كاملة)، فريك، قمح، أرز مطهو ببخار، بطاطس مسلوقة.",
-            "البروتين": "سمك مشوي، بيض مسلوق، جبنة قريش بالخضار، بقوليات (فول، حمص)، دجاج مسلوق.",
-            "الدهون": "زيت زيتون، زيت حار، مكسرات (سوداني/لب سوري).",
-            "السكريات": "فواكه الموسم (جوافة، برتقال، بطيخ)، عسل نحل."
-        },
-        "حلول_موسوعية": {
-            "الحفاظ على الوزن": "قاعدة 'ثلث لطعامك وثلث لشرابك'؛ عدم الشبع التام في أي وجبة.",
-            "زيادة النشاط": "شرب الشاي بالمرمرية أو القرفة لضبط السكر في الدم.",
-            "صحة الجهاز الهضمي": "الاعتماد على الخضروات الورقية (فجل، جرجير، كرات) مع كل وجبة."
-        },
-        "التمارين_الشعبية": ["رياضة السويدي الصباحية", "المشي لمدة ساعة يومياً", "تمارين البطن والضغط"]
-    },
-    "زيادة وزن": {
-        "تشخيص": "تنشيط الحرق والتخلص من 'التقل' والدهون المخزنة في البطن والجسم.",
-        "موسوعة_الأكل": {
-            "النشويات (بكمية قليلة)": "عيش سن، ربع رغيف بلدي، فريك مسلوق، بطاطس مسلوقة (بدون زيت).",
-            "البروتين (أساسي)": "بيض مسلوق، جبنة قريش، سمك مشوي، صدور دجاج، تونة مصفاة، عدس (بدون سمن).",
-            "الخضروات (مفتوح)": "جرجير، خس، خيار، سبانخ، ملوخية (بدون طشة تقيلة)، كوسة.",
-            "المشروبات": "قرفة، جنزبيل، كمون بالليمون، قهوة خضراء."
-        },
-        "حلول_موسوعية": {
-            "الجوع المستمر": "أكل الخص والخيار والجرجير بأي كمية، وشرب كوبين مياه قبل الأكل بـ 10 دقائق.",
-            "ثبات الوزن": "تبديل وجبة العشاء بزبادي وليمون فقط لمدة أسبوع.",
-            "بديل الحلويات": "ثمرة فاكهة واحدة (تفاح أو برتقال) أو 3 تمرات عند الضرورة القصوى."
-        },
-        "التمارين_الشعبية": ["المشي السريع جداً (كأنك تجري)", "نط الحبل", "طلوع ونزول السلالم"]
-    }
+# 3. داتا الميزانية (أكلات اقتصادية)
+BUDGET_MEALS = {
+    "ميزانية بسيطة (أقل من 50 جنيه)": "كشري أصفر ببيض مسلوق، أو بصارة وعيش بلدي، أو فول بالزيت الحار وجبنة قريش.",
+    "ميزانية متوسطة (50 - 150 جنيه)": "كبد وقوانص بالبصل وفلفل ألوان، أو مسقعة باللحمة المفرومة، أو سمك بلطي مشوي ورز صيادية.",
+    "ميزانية مفتوحة (أكثر من 150 جنيه)": "صدور دجاج مشوية وخضار سوتيه، أو طاجن عكاوي بالفريك، أو لحمة مسلوقة وشوربة دافئة."
 }
 
-# 4. واجهة المستخدم
-st.markdown('<div class="header-box"><h1>📖 الموسوعة الصحية الشاملة للجميع</h1><p>مرجعك الكامل للأكل الشعبي والحلول الصحية المتاحة</p></div>', unsafe_allow_html=True)
+# 4. الروتين الصباحي حسب الحالة
+ROUTINE_DATA = {
+    "نحافة": "ابدأ يومك بـ 3 تمرات ومعلقة عسل أسود لتنشيط الدم وفتح الشهية.",
+    "مثالي": "كوب ماء دافئ بقطرات ليمون ومعلقة عسل نحل صغيرة للمناعة والنشاط.",
+    "زيادة وزن": "كوب ماء كبير مع معلقة خل تفاح صغيرة (لو معدتك سليمة) لرفع معدل الحرق."
+}
 
+# 5. واجهة المستخدم
+st.markdown('<div class="header-box"><h1>🛡️ مساعد ابن البلد الذكي</h1><p>صحتك على قد جيبك.. وروتينك سر قوتك</p></div>', unsafe_allow_html=True)
+
+# الجزء الأول: الميزانية والروتين (أول ما المستخدم يفتح)
+col_top1, col_top2 = st.columns(2)
+
+with col_top1:
+    st.markdown('<div class="routine-card"><h3>☀️ روتينك الصباحي النهاردة</h3></div>', unsafe_allow_html=True)
+    routine_status = st.selectbox("حدد حالتك للروتين:", ["زيادة وزن", "نحافة", "مثالي"])
+    st.info(f"✨ **نصيحة الصباح:** {ROUTINE_DATA[routine_status]}")
+
+with col_top2:
+    st.markdown('<div class="budget-card"><h3>💰 رادار الميزانية (تاكل إيه بكام؟)</h3></div>', unsafe_allow_html=True)
+    user_budget = st.selectbox("ميزانيتك النهاردة كام؟", list(BUDGET_MEALS.keys()))
+    st.success(f"🥘 **اقتراح الأكلة:** {BUDGET_MEALS[user_budget]}")
+
+st.write("---")
+
+# الجزء الثاني: الموسوعة والمتابعة
 with st.sidebar:
-    st.markdown("### 📝 سجل بياناتك")
+    st.header("👤 ملفك الشخصي")
     name = st.text_input("الاسم:")
     weight = st.number_input("الوزن (كجم):", 30, 200, 75)
     height = st.number_input("الطول (سم):", 100, 250, 175)
+    
+    st.write("---")
+    # عداد المية (ثبتناه في الجنب عشان ميزحمش الصفحة)
+    if 'water' not in st.session_state: st.session_state.water = 0
+    st.write(f"💧 شربت {st.session_state.water} كوبايات مية")
+    if st.button("➕ شربت كوباية"): st.session_state.water += 1
 
-if st.button("🏁 تصفح الموسوعة الكاملة"):
+if st.button("🏁 إصدار التقرير الموسوعي"):
     if not name:
-        st.error("يرجى إدخال الاسم لفتح الموسوعة!")
+        st.error("يرجى كتابة الاسم")
     else:
         bmi = weight / ((height/100)**2)
         status = "نحافة" if bmi < 18.5 else "مثالي" if bmi < 25 else "زيادة وزن"
-        data = MASTER_ENCYCLOPEDIA[status]
         
-        st.success(f"مرحباً بك يا {name}. تم تخصيص الموسوعة لحالتك: {status}")
+        st.markdown(f"## 📑 تقرير البطل: {name}")
         
-        # القسم 1: موسوعة الأكل
-        st.markdown(f"### 🍱 1. موسوعة الأكل المتاح ({status})")
-        col_food1, col_food2 = st.columns(2)
-        
-        keys = list(data["موسوعة_الأكل"].keys())
-        with col_food1:
-            st.markdown(f'<div class="encyclo-section"><b>✔️ {keys[0]}:</b><br>{data["موسوعة_الأكل"][keys[0]]}</div>', unsafe_allow_html=True)
-            st.markdown(f'<div class="encyclo-section"><b>✔️ {keys[1]}:</b><br>{data["موسوعة_الأكل"][keys[1]]}</div>', unsafe_allow_html=True)
-        with col_food2:
-            st.markdown(f'<div class="encyclo-section"><b>✔️ {keys[2]}:</b><br>{data["موسوعة_الأكل"][keys[2]]}</div>', unsafe_allow_html=True)
-            st.markdown(f'<div class="encyclo-section"><b>✔️ {keys[3]}:</b><br>{data["موسوعة_الأكل"][keys[3]]}</div>', unsafe_allow_html=True)
-
-        st.write("---")
-
-        # القسم 2: غرفة الحلول الموسوعية
-        st.markdown("### 🛠️ 2. موسوعة الحلول (إجابات لكل مشاكلك)")
-        for prob, sol in data["حلول_موسوعية"].items():
-            st.markdown(f'<div class="solution-item"><b>❓ مشكلة {prob}:</b><br>💡 الحل: {sol}</div>', unsafe_allow_html=True)
-
-        st.write("---")
-
-        # القسم 3: التمارين والمسار
-        st.markdown("### 🏋️ 3. دليل الحركة وتوقع الميزان")
-        col_end1, col_end2 = st.columns([1, 1])
-        with col_end1:
-            for ex in data["التمارين_الشعبية"]:
-                st.write(f"📌 {ex}")
-        with col_end2:
-            # رسم بياني توضيحي
-            st.line_chart(np.random.normal(weight, 0.5, 30))
-
+        c1, c2 = st.columns(2)
+        with c1:
+            st.markdown(f'<div class="info-section"><h3>⚖️ تحليل الجسم</h3><p>مؤشر الكتلة: <b>{bmi:.1f}</b><br>الحالة العامة: <b>{status}</b></p></div>', unsafe_allow_html=True)
+        with c2:
+            st.markdown(f'<div class="info-section"><h3>📈 مسار الوزن</h3>', unsafe_allow_html=True)
+            st.line_chart(np.random.normal(weight, 0.3, 20))
+            st.markdown('</div>', unsafe_allow_html=True)
+            
+        st.markdown(f"### 🥦 نصيحة الموسوعة لـ {status}")
+        if status == "زيادة وزن":
+            st.warning("ركز في الخضار المسلوق وابعد عن العيش الفينو والمقليات.")
+        elif status == "نحافة":
+            st.info("البروتين الشعبي (عدس وفول) مع السمن البلدي هيغير جسمك.")
+        else:
+            st.success("حافظ على المشي الصباحي وشرب المية بانتظام.")
 else:
-    st.info("👋 دخل بياناتك واضغط على الزر عشان تفتح الموسوعة الكاملة الخاصة بيك!")
+    st.info("👋 دخل بياناتك عشان نفتحلك الموسوعة والتقرير!")
