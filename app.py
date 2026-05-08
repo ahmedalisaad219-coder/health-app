@@ -2,77 +2,85 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 
-# 1. إعدادات الصفحة
-st.set_page_config(page_title="AI Health Master Interactive", page_icon="📈", layout="wide")
+# 1. إعدادات الصفحة الفخمة
+st.set_page_config(page_title="AI Health Hub Pro MAX", page_icon="🏆", layout="wide")
 
-# 2. تصميم "الوضوح العالي" مع لمسات تفاعلية
+# 2. تصميم "الوضوح الفائق" (Bright Luxury UI)
 st.markdown("""
     <style>
-    .stApp { background-color: #ffffff; color: #000000; }
-    .header-style {
-        background: #f0f9ff; padding: 30px; border-radius: 15px;
-        text-align: center; border: 2px solid #3b82f6; margin-bottom: 25px;
+    .stApp { background-color: #fcfcfc; color: #1a1a1a; }
+    .main-title {
+        background: white; padding: 40px; border-radius: 20px;
+        text-align: center; border-bottom: 6px solid #2563eb;
+        box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); margin-bottom: 30px;
     }
-    .card-white {
-        background: white; padding: 20px; border-radius: 12px;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.1); border: 1px solid #e2e8f0;
-        margin-bottom: 15px;
+    .metric-box {
+        background: white; padding: 25px; border-radius: 15px;
+        border: 1px solid #e5e7eb; box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        text-align: center;
     }
-    h1, h2, h3 { color: #1e3a8a !important; font-weight: bold; }
-    p, b, span { font-size: 19px !important; }
+    h1, h2, h3 { color: #1e3a8a !important; font-family: 'Segoe UI', sans-serif; }
+    p, li, b { font-size: 18px !important; }
+    .stButton>button {
+        background: linear-gradient(90deg, #2563eb, #3b82f6);
+        color: white !important; border-radius: 15px; height: 60px;
+        font-weight: bold; font-size: 22px; border: none; width: 100%;
+    }
     </style>
 """, unsafe_allow_html=True)
 
-# 3. قاعدة البيانات الضخمة (الموسوعة الشاملة)
-DATABASE = {
+# 3. الموسوعة الغذائية والتدريبية (Mega Database)
+MASTER_DATABASE = {
     "نحافة": {
-        "تحليل": "جسمك يحرق الطاقة بسرعة فائقة. نحتاج لخطة 'فائض سعرات' لبناء العضلات.",
-        "الافطار": "4 بيضات + رغيف خبز + زبدة فول سوداني + ثمرة موز.",
-        "الغداء": "200جم لحم أو دجاج + طبق أرز كبير + سلطة طحينة.",
-        "العشاء": "بطاطس مهروسة + علبة تونة + كوب زبادي كامل الدسم مع عسل.",
-        "الممنوعات": "تجنب شرب الماء وسط الأكل، وتجنب الوجبات السريعة الضارة.",
-        "المسموحات": "المكسرات، التمر، العسل، العصائر الطبيعية، الزيوت الصحية.",
-        "تفاعل": "snow"
+        "تحليل": "هدفنا هو 'الضخامة العضلية'. سنقوم بزيادة كثافة الوجبات لرفع الوزن بشكل صحي.",
+        "الافطار": "4 بيضات + 2 توست زبدة فول سوداني + موزة.",
+        "الغداء": "200جم بروتين + طبق أرز كبير + سلطة طحينة + بطاطس مشوية.",
+        "العشاء": "علبة تونة + طبق مكرونة بالوايت صوص + كوب زبادي بالعسل.",
+        "بديل_ذكي": "يمكنك استبدال التونة بصدر دجاج أو جبن قريش بضعف الكمية.",
+        "تمارين": ["يوم 1: صدر وتراي", "يوم 2: ضهر وباي", "يوم 3: راحة", "يوم 4: أرجل", "يوم 5: كتف وبطن"],
+        "لون_الرسم": "#3b82f6" # أزرق للنمو
     },
     "مثالي": {
-        "تحليل": "أنت في منطقة الأمان. هدفنا هو تحسين كفاءة القلب ونحت العضلات.",
-        "الافطار": "3 ملاعق فول بزيت زيتون + بيضة + نصف رغيف + خيار.",
-        "الغداء": "سمك مشوي أو صدور دجاج + 6 ملاعق أرز + سلطة خضراء متنوعة.",
-        "العشاء": "جبن قريش + ثمرة تفاح + كوب زبادي لايت.",
-        "الممنوعات": "تجنب الإفراط في الملح والسكر للحفاظ على ضغط الدم.",
-        "المسموحات": "الفواكه الموسمية، الشاي الأخضر، الشوفان، الأسماك.",
-        "تفاعل": "balloons"
+        "تحليل": "هدفنا 'النحت والتحمل'. سنركز على جودة البروتين والألياف للحفاظ على الرشاقة.",
+        "الافطار": "شوفان بالحليب والتوت + بيضة واحدة + شاي أخضر.",
+        "الغداء": "سمك مشوي + 5 ملاعق أرز + طبق سلطة خضراء ضخم.",
+        "العشاء": "جبن قريش بالزعتر + خيار + تفاحة.",
+        "بديل_ذكي": "يمكن استبدال الشوفان بزبادي يوناني مع مكسرات نيئة.",
+        "تمارين": ["3 أيام تمرين شامل (Full Body)", "يومين كارديو (جري/سباحة)", "يومين راحة"],
+        "لون_الرسم": "#fbbf24" # ذهبي للثبات
     },
     "زيادة وزن": {
-        "تحليل": "الجسم يخزن الدهون. سنستخدم استراتيجية 'عجز السعرات' لتحويل الدهون لطاقة.",
-        "الافطار": "2 بيضة مسلوقة + قطعة جبن قريش + جرجير وفلفل ألوان.",
-        "الغداء": "بروتين مشوي (دجاج/لحم/سمك) + طبق خضار سوتيه كبير + ربع رغيف فقط.",
-        "العشاء": "علبة زبادي بالليمون + 2 خيار.",
-        "الممنوعات": "تجنب الخبز الأبيض، السكر، المقليات، والمشروبات الغازية تماماً.",
-        "المسموحات": "القهوة السوداء، القرفة، الزنجبيل، الخضروات الورقية بكثرة.",
-        "تفاعل": "balloons"
+        "تحليل": "هدفنا 'حرق الدهون'. سنعتمد على تقليل الكربوهيدرات وزيادة معدل الحرق اليومي.",
+        "الافطار": "3 بيضات مسلوقة + جرجير + قطعة جبن قريش + ربع رغيف.",
+        "الغداء": "بروتين مشوي (لحم/دجاج) + خضار سوتيه مفتوح الكمية + سلطة خل تفاح.",
+        "العشاء": "زبادي بالليمون + 2 خيار + كوب قرفة.",
+        "بديل_ذكي": "يمكن استبدال اللحم الأحمر بصدور الدجاج أو سمك الماكريل.",
+        "تمارين": ["4 أيام كارديو عالي الكثافة (HIIT)", "يومين رفع أثقال خفيفة", "يوم مشي طويل"],
+        "لون_الرسم": "#10b981" # أخضر للحرق
     }
 }
 
-# 4. واجهة المستخدم
-st.markdown('<div class="header-style"><h1>🛡️ AI Health Master Pro v16</h1><p>نظام التحليل التفاعلي - ليفل الاحتراف الأقصى</p></div>', unsafe_allow_html=True)
+# 4. واجهة المستخدم المدعمة بالمنطق الرياضي
+st.markdown('<div class="main-title"><h1>🏆 AI Health Master: Infinite Edition</h1><p>نظام التحليل التفاعلي المتكامل (سعرات - تمارين - وجبات)</p></div>', unsafe_allow_html=True)
 
 with st.container():
-    st.markdown("### 📝 بياناتك الحيوية")
-    c1, c2, c3 = st.columns(3)
+    st.markdown("### 📝 الملف الصحي")
+    c1, c2, c3, c4 = st.columns(4)
     with c1:
-        name = st.text_input("👤 اسمك الكامل:")
+        name = st.text_input("👤 الاسم:")
+        age = st.number_input("🎂 العمر:", 10, 100, 25)
     with c2:
-        weight = st.number_input("⚖️ الوزن الحالي (كجم):", 30.0, 200.0, 75.0)
+        weight = st.number_input("⚖️ الوزن (كجم):", 30.0, 200.0, 75.0)
     with c3:
         height = st.number_input("📏 الطول (سم):", 100, 250, 175)
+    with c4:
+        gender = st.selectbox("🚻 النوع:", ["ذكر", "أنثى"])
+        goal_type = st.selectbox("🎯 الهدف:", ["تنشيف وحرق", "ضخامة وبناء", "لياقة وثبات"])
 
-    goal = st.radio("🎯 اختر هدفك الحالي (سيؤثر على الرسم البياني):", ["ضخامة عضلية (زيادة)", "تنشيف دهون (نقصان)", "لياقة بدنية (ثبات)"], horizontal=True)
-
-# 5. محرك التقرير والرسم البياني المتحرك
-if st.button("🏁 إصدار التقرير التفاعلي"):
+# 5. محرك الحسابات (BMR & TDEE)
+if st.button("🏁 تحليل القوة القصوى"):
     if not name:
-        st.error("⚠️ يرجى إدخال الاسم!")
+        st.error("⚠️ يرجى إدخال الاسم لفتح التقرير!")
     else:
         # حساب الـ BMI
         bmi = weight / ((height/100)**2)
@@ -80,49 +88,65 @@ if st.button("🏁 إصدار التقرير التفاعلي"):
         elif bmi < 25: status = "مثالي"
         else: status = "زيادة وزن"
         
-        info = DATABASE[status]
+        info = MASTER_DATABASE[status]
         
-        # التفاعلات البصرية
-        if info["تفاعل"] == "snow": st.snow()
-        else: st.balloons()
-        
-        st.success(f"أهلاً بك يا {name}. تم إصدار تقريرك بناءً على هدف: {goal}")
-        
-        # كروت النتائج
-        r1, r2, r3 = st.columns(3)
-        with r1:
-            st.markdown(f'<div class="card-white"><h3>📊 مؤشر الكتلة (BMI)</h3><h1 style="color:#2563eb">{bmi:.1f}</h1><p>الحالة: <b>{status}</b></p></div>', unsafe_allow_html=True)
-        with r2:
-            st.markdown(f'<div class="card-white"><h3>🚫 الممنوعات</h3><p style="color:#dc2626">{info["الممنوعات"]}</p></div>', unsafe_allow_html=True)
-        with r3:
-            st.markdown(f'<div class="card-white"><h3>✅ المسموحات</h3><p style="color:#16a34a">{info["المسموحات"]}</p></div>', unsafe_allow_html=True)
-
-        # الرسم البياني التفاعلي (المتحرك بناءً على الهدف)
-        st.markdown("---")
-        st.subheader(f"📈 توقعات مسار الوزن لـ {goal} (30 يوم)")
-        
-        # منطق تحريك الرسم البياني
-        days = np.arange(30)
-        if "ضخامة" in goal:
-            # الخط بيطلع لفوق
-            trend_data = weight + (days * 0.15) + np.random.normal(0, 0.1, 30)
-        elif "تنشيف" in goal:
-            # الخط بينزل لتحت
-            trend_data = weight - (days * 0.18) + np.random.normal(0, 0.1, 30)
+        # حساب السعرات (معادلة Mifflin-St Jeor)
+        if gender == "ذكر":
+            bmr = (10 * weight) + (6.25 * height) - (5 * age) + 5
         else:
-            # الخط بيتحرك بالعرض (ثبات)
-            trend_data = weight + np.random.normal(0, 0.2, 30)
-            
-        chart_df = pd.DataFrame({"الوزن المتوقع": trend_data}, index=days)
-        st.line_chart(chart_df)
-
-        # تفاصيل النظام الغذائي
-        st.markdown("### 🥘 نظام الوجبات اليومي المخصص")
-        m1, m2, m3 = st.columns(3)
-        m1.info(f"**🍳 الإفطار:**\n\n{info['الافطار']}")
-        m2.success(f"**🥘 الغداء:**\n\n{info['الغداء']}")
-        m3.warning(f"**🥣 العشاء:**\n\n{info['العشاء']}")
+            bmr = (10 * weight) + (6.25 * height) - (5 * age) - 161
         
-        st.markdown(f"**🔬 تحليل الخبراء:** {info['تحليل']}")
+        # تعديل السعرات حسب الهدف
+        tdee = bmr * 1.375 # نشاط متوسط
+        if "ضخامة" in goal_type: target_calories = tdee + 500
+        elif "تنشيف" in goal_type: target_calories = tdee - 500
+        else: target_calories = tdee
+
+        st.balloons()
+        st.markdown(f"## 📑 تقرير التحليل الشامل للبطل: {name}")
+
+        # كروت الأرقام الملونة
+        r1, r2, r3, r4 = st.columns(4)
+        r1.markdown(f'<div class="metric-box"><h3>BMI</h3><h2 style="color:{info["لون_الرسم"]}">{bmi:.1f}</h2><p>{status}</p></div>', unsafe_allow_html=True)
+        r2.markdown(f'<div class="metric-box"><h3>السعرات المطلوبة</h3><h2 style="color:#2563eb">{int(target_calories)}</h2><p>سعرة/يوم</p></div>', unsafe_allow_html=True)
+        r3.markdown(f'<div class="metric-box"><h3>وزنك المثالي</h3><h2 style="color:#10b981">{int(22 * ((height/100)**2))}</h2><p>كجم تقريباً</p></div>', unsafe_allow_html=True)
+        r4.markdown(f'<div class="metric-box"><h3>نسبة الحرق</h3><h2 style="color:#f59e0b">{int(bmr)}</h2><p>BMR الأساسي</p></div>', unsafe_allow_html=True)
+
+        st.markdown("---")
+
+        # الرسوم البيانية التفاعلية الملونة
+        st.subheader(f"📈 مسار تطور الوزن المتوقع لـ {goal_type}")
+        days = np.arange(30)
+        if "ضخامة" in goal_type:
+            y = weight + (days * 0.12) + np.random.normal(0, 0.05, 30)
+        elif "تنشيف" in goal_type:
+            y = weight - (days * 0.15) + np.random.normal(0, 0.05, 30)
+        else:
+            y = weight + np.random.normal(0, 0.1, 30)
+        
+        df_chart = pd.DataFrame(y, index=days, columns=["الوزن"])
+        st.line_chart(df_chart, color=info["لون_الرسم"])
+
+        # داتا الوجبات والتمارين (الضخامة المعلوماتية)
+        st.markdown("### 🏋️ النظام التدريبي والغذائي المتكامل")
+        tab1, tab2, tab3 = st.tabs(["🍎 خطة الوجبات", "💪 جدول التمرين", "🔄 البدائل الذكية"])
+        
+        with tab1:
+            st.info(f"🔬 **التحليل:** {info['تحليل']}")
+            c_m1, c_m2, c_m3 = st.columns(3)
+            c_m1.success(f"**🍳 الإفطار:**\n\n{info['الافطار']}")
+            c_m2.success(f"**🥘 الغداء:**\n\n{info['الغداء']}")
+            c_m3.success(f"**🥣 العشاء:**\n\n{info['العشاء']}")
+            
+        with tab2:
+            st.warning("⚠️ اتبع هذا الجدول لمدة 4 أسابيع للحصول على نتائج ملحوظة:")
+            for day in info['تمارين']:
+                st.write(f"✅ {day}")
+                
+        with tab3:
+            st.help(f"**💡 نصيحة التبديل:** {info['بديل_ذكي']}")
+            st.write("---")
+            st.write("🚀 **تذكر:** الالتزام بالماء (3 لتر يومياً) يسرع النتائج بنسبة 40%!")
+
 else:
-    st.info("👋 بانتظار بياناتك لتحويل الموقع إلى لوحة تحكم تفاعلية!")
+    st.info("👋 بانتظار بياناتك لتحويلها إلى ذكاء اصطناعي صحي متكامل!")
