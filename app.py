@@ -1,105 +1,152 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
+import plotly.express as px
 from datetime import datetime
 
-# 1. إعدادات المنصة
-st.set_page_config(page_title="مساعد ابن البلد الذكي", page_icon="💰", layout="wide")
+# 1. إعدادات المنصة الأساسية
+st.set_page_config(page_title="Health Student | منصة صحة الطالب", page_icon="🎓", layout="wide")
 
-# 2. التنسيق البصري (High Visibility & Clean Design)
+# 2. تصميم الواجهة (Custom CSS)
 st.markdown("""
     <style>
-    .stApp { background-color: #ffffff; color: #1a1a1a; }
-    .header-box {
-        background: #065f46; padding: 25px; border-radius: 15px;
-        text-align: center; color: white; margin-bottom: 20px;
+    .stApp { background-color: #fcfcfc; }
+    .main-header {
+        background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+        padding: 35px; border-radius: 15px; text-align: center; color: white; margin-bottom: 30px;
     }
-    .budget-card {
-        background: #f0fdf4; padding: 20px; border-radius: 15px;
-        border: 2px solid #16a34a; margin-bottom: 20px;
+    .section-card {
+        background: white; padding: 25px; border-radius: 15px;
+        border-top: 6px solid #3b82f6; box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        margin-bottom: 20px;
     }
-    .routine-card {
-        background: #fff7ed; padding: 20px; border-radius: 15px;
-        border: 2px solid #ea580c; margin-bottom: 20px;
+    .recommendation-box {
+        background: #f0fdf4; border-right: 5px solid #22c55e;
+        padding: 15px; border-radius: 10px; margin-top: 15px; font-size: 16px;
     }
-    .info-section {
-        background: #f8fafc; padding: 20px; border-radius: 12px;
-        border-right: 8px solid #065f46; margin-bottom: 15px;
-    }
-    h1, h2, h3 { font-weight: 900 !important; color: #064e3b; }
-    p, b, li { font-size: 19px !important; line-height: 1.7; }
-    .stButton>button { background: #065f46; color: white !important; font-weight: bold; border-radius: 10px; }
+    h3 { color: #1e40af; font-weight: 800; margin-bottom: 15px; }
+    .stButton>button { background: #1e40af; color: white; border-radius: 8px; width: 100%; height: 45px; }
     </style>
 """, unsafe_allow_html=True)
 
-# 3. داتا الميزانية (أكلات اقتصادية)
-BUDGET_MEALS = {
-    "ميزانية بسيطة (أقل من 50 جنيه)": "كشري أصفر ببيض مسلوق، أو بصارة وعيش بلدي، أو فول بالزيت الحار وجبنة قريش.",
-    "ميزانية متوسطة (50 - 150 جنيه)": "كبد وقوانص بالبصل وفلفل ألوان، أو مسقعة باللحمة المفرومة، أو سمك بلطي مشوي ورز صيادية.",
-    "ميزانية مفتوحة (أكثر من 150 جنيه)": "صدور دجاج مشوية وخضار سوتيه، أو طاجن عكاوي بالفريك، أو لحمة مسلوقة وشوربة دافئة."
-}
+# 3. العنوان الرئيسي للمنصة
+st.markdown('<div class="main-header"><h1>🎓 Health Student</h1><p>نظام ذكي لتحليل العادات الصحية وتحسين أداء الطلاب</p></div>', unsafe_allow_html=True)
 
-# 4. الروتين الصباحي حسب الحالة
-ROUTINE_DATA = {
-    "نحافة": "ابدأ يومك بـ 3 تمرات ومعلقة عسل أسود لتنشيط الدم وفتح الشهية.",
-    "مثالي": "كوب ماء دافئ بقطرات ليمون ومعلقة عسل نحل صغيرة للمناعة والنشاط.",
-    "زيادة وزن": "كوب ماء كبير مع معلقة خل تفاح صغيرة (لو معدتك سليمة) لرفع معدل الحرق."
-}
-
-# 5. واجهة المستخدم
-st.markdown('<div class="header-box"><h1>🛡️ مساعد ابن البلد الذكي</h1><p>صحتك على قد جيبك.. وروتينك سر قوتك</p></div>', unsafe_allow_html=True)
-
-# الجزء الأول: الميزانية والروتين (أول ما المستخدم يفتح)
-col_top1, col_top2 = st.columns(2)
-
-with col_top1:
-    st.markdown('<div class="routine-card"><h3>☀️ روتينك الصباحي النهاردة</h3></div>', unsafe_allow_html=True)
-    routine_status = st.selectbox("حدد حالتك للروتين:", ["زيادة وزن", "نحافة", "مثالي"])
-    st.info(f"✨ **نصيحة الصباح:** {ROUTINE_DATA[routine_status]}")
-
-with col_top2:
-    st.markdown('<div class="budget-card"><h3>💰 رادار الميزانية (تاكل إيه بكام؟)</h3></div>', unsafe_allow_html=True)
-    user_budget = st.selectbox("ميزانيتك النهاردة كام؟", list(BUDGET_MEALS.keys()))
-    st.success(f"🥘 **اقتراح الأكلة:** {BUDGET_MEALS[user_budget]}")
-
-st.write("---")
-
-# الجزء الثاني: الموسوعة والمتابعة
+# 4. شريط البيانات الجانبي (Input)
 with st.sidebar:
-    st.header("👤 ملفك الشخصي")
-    name = st.text_input("الاسم:")
-    weight = st.number_input("الوزن (كجم):", 30, 200, 75)
-    height = st.number_input("الطول (سم):", 100, 250, 175)
+    st.header("👤 1. بيانات الطالب")
+    student_id = st.text_input("Student ID (رقم الطالب):", placeholder="أدخل رقمك هنا...")
+    age = st.number_input("العمر:", 15, 40, 20)
     
     st.write("---")
-    # عداد المية (ثبتناه في الجنب عشان ميزحمش الصفحة)
+    st.header("🥗 5. قسم التغذية")
+    meals_count = st.slider("عدد الوجبات في اليوم:", 1, 6, 3)
+    fast_food = st.selectbox("الوجبات السريعة أسبوعياً:", ["نادراً", "1-2 مرة", "3+ مرات"])
+    veggies = st.checkbox("أتناول خضار وفواكه يومياً")
+    breakfast = st.checkbox("أهتم بوجبة الإفطار")
+    
+    st.write("---")
+    # عداد المية (ميزة ابن البلد الأصلية)
     if 'water' not in st.session_state: st.session_state.water = 0
     st.write(f"💧 شربت {st.session_state.water} كوبايات مية")
     if st.button("➕ شربت كوباية"): st.session_state.water += 1
 
-if st.button("🏁 إصدار التقرير الموسوعي"):
-    if not name:
-        st.error("يرجى كتابة الاسم")
-    else:
-        bmi = weight / ((height/100)**2)
-        status = "نحافة" if bmi < 18.5 else "مثالي" if bmi < 25 else "زيادة وزن"
-        
-        st.markdown(f"## 📑 تقرير البطل: {name}")
-        
-        c1, c2 = st.columns(2)
-        with c1:
-            st.markdown(f'<div class="info-section"><h3>⚖️ تحليل الجسم</h3><p>مؤشر الكتلة: <b>{bmi:.1f}</b><br>الحالة العامة: <b>{status}</b></p></div>', unsafe_allow_html=True)
-        with c2:
-            st.markdown(f'<div class="info-section"><h3>📈 مسار الوزن</h3>', unsafe_allow_html=True)
-            st.line_chart(np.random.normal(weight, 0.3, 20))
-            st.markdown('</div>', unsafe_allow_html=True)
-            
-        st.markdown(f"### 🥦 نصيحة الموسوعة لـ {status}")
-        if status == "زيادة وزن":
-            st.warning("ركز في الخضار المسلوق وابعد عن العيش الفينو والمقليات.")
-        elif status == "نحافة":
-            st.info("البروتين الشعبي (عدس وفول) مع السمن البلدي هيغير جسمك.")
-        else:
-            st.success("حافظ على المشي الصباحي وشرب المية بانتظام.")
+# 5. عرض المحتوى الرئيسي بعد إدخال الـ ID
+if not student_id:
+    st.warning("👈 من فضلك ابدأ بإدخال رقم الطالب في القائمة الجانبية لتفعيل التحليل.")
 else:
-    st.info("👋 دخل بياناتك عشان نفتحلك الموسوعة والتقرير!")
+    # الصف الأول: النوم والنشاط البدني
+    col1, col2 = st.columns(2)
+
+    with col1:
+        st.markdown('<div class="section-card">', unsafe_allow_html=True)
+        st.subheader("😴 2. قسم النوم")
+        sleep_hours = st.number_input("ساعات النوم (ليلاً):", 3.0, 14.0, 7.5)
+        sleep_quality = st.select_slider("جودة نومك:", options=["سيئة", "مقبولة", "جيدة", "ممتازة"])
+        
+        # رسم بياني للنوم
+        sleep_fig = px.bar(
+            x=["نومك الحالي", "المعدل المثالي"], 
+            y=[sleep_hours, 8], 
+            color=["نومك", "المثالي"],
+            title="مقارنة ساعات النوم",
+            labels={'x': '', 'y': 'الساعات'}
+        )
+        st.plotly_chart(sleep_fig, use_container_width=True)
+        
+        st.markdown('<div class="recommendation-box"><b>💡 توصيات النوم:</b><br>', unsafe_allow_html=True)
+        if sleep_hours < 7: st.write("- ⚠️ نومك قليل؛ حاول تنام بدري لزيادة تركيزك الدراسي.")
+        st.write("- 📱 قلل استخدام الموبايل قبل النوم بـ 30 دقيقة لتحسين جودة النوم.")
+        st.markdown('</div></div>', unsafe_allow_html=True)
+
+    with col2:
+        st.markdown('<div class="section-card">', unsafe_allow_html=True)
+        st.subheader("🏃 3. النشاط البدني")
+        activity_days = st.slider("أيام الرياضة في الأسبوع:", 0, 7, 3)
+        sitting_hours = st.number_input("ساعات الجلوس للدراسة:", 1, 16, 6)
+        
+        # رسم بياني للنشاط (Pie Chart)
+        act_fig = px.pie(
+            names=["جلوس", "حركة/نوم"], 
+            values=[sitting_hours, 24-sitting_hours], 
+            hole=0.5,
+            title="توزيع نشاطك اليومي"
+        )
+        st.plotly_chart(act_fig, use_container_width=True)
+        
+        st.markdown('<div class="recommendation-box"><b>💡 توصيات النشاط:</b><br>', unsafe_allow_html=True)
+        if activity_days < 3: st.write("- 🏃 مارس نشاط يومي أكثر؛ حتى المشي لمدة 20 دقيقة يكفي.")
+        st.write("- 🚶 لكل ساعة جلوس، تحرك لمدة 5 دقائق لتنشيط الدورة الدموية.")
+        st.markdown('</div></div>', unsafe_allow_html=True)
+
+    # الصف الثاني: الموبايل والتغذية
+    col3, col4 = st.columns(2)
+
+    with col3:
+        st.markdown('<div class="section-card">', unsafe_allow_html=True)
+        st.subheader("📱 4. استخدام الموبايل")
+        phone_hours = st.slider("ساعات الشاشة يومياً:", 1, 18, 5)
+        st.write(f"تأثير الموبايل: {'عالي' if phone_hours > 6 else 'متوسط'}")
+        
+        # Line chart تخيلي لاستخدام الموبايل
+        usage_data = pd.DataFrame({"الساعة": range(8, 24), "الاستخدام": np.random.randint(10, 60, 16)})
+        fig_phone = px.line(usage_data, x="الساعة", y="الاستخدام", title="نمط استخدامك المتوقع (دقائق/ساعة)")
+        st.plotly_chart(fig_phone, use_container_width=True)
+        
+        st.markdown('<div class="recommendation-box"><b>💡 توصيات تقليل الاستخدام:</b><br>', unsafe_allow_html=True)
+        if phone_hours > 5: st.write("- 📉 قلل وقت الشاشة؛ حدد أوقاتاً معينة لتصفح السوشيال ميديا.")
+        st.write("- 📵 ابعد الموبايل عن مكان المذاكرة تماماً لزيادة الإنتاجية.")
+        st.markdown('</div></div>', unsafe_allow_html=True)
+
+    with col4:
+        st.markdown('<div class="section-card">', unsafe_allow_html=True)
+        st.subheader("🥗 5. تحليل التغذية")
+        # حساب نقاط التغذية
+        score = (meals_count * 15) + (25 if veggies else 0) + (30 if breakfast else 0)
+        st.write(f"درجة جودة التغذية: {score}%")
+        st.progress(score / 100)
+        
+        # Bar chart للتغذية
+        diet_fig = px.bar(x=["نقاطك", "الهدف"], y=[score, 100], color=["أنت", "المثالي"], title="تقييم نظامك الغذائي")
+        st.plotly_chart(diet_fig, use_container_width=True)
+
+        st.markdown('<div class="recommendation-box"><b>💡 نصيحة التغذية:</b><br>', unsafe_allow_html=True)
+        if not breakfast: st.write("- 🍳 الفطار هو أهم وجبة للطالب؛ بيدي طاقة للمخ.")
+        if fast_food == "3+ مرات": st.write("- 🍔 قلل الوجبات السريعة؛ بتسبب خمول وتشتت.")
+        st.markdown('</div></div>', unsafe_allow_html=True)
+
+    # القسم الأخير: التوصية الشاملة
+    st.write("---")
+    st.subheader(f"📊 7. التقرير الختامي للطالب: {student_id}")
+    
+    total_health_score = (score + (sleep_hours*10) + (activity_days*10)) / 3
+    
+    if total_health_score > 70:
+        st.success(f"استمر يا بطل! درجتك الصحية العامة هي {total_health_score:.1f}%. عاداتك تدعم تفوقك الدراسي.")
+    else:
+        st.warning(f"درجتك الصحية {total_health_score:.1f}%. تحتاج لتعديل بعض العادات (خاصة النوم والموبايل) لتحسين أدائك.")
+
+    # ميزة إضافية: نصيحة الموسم (من الكود القديم)
+    current_month = datetime.now().month
+    season = "الشتاء" if current_month in [11,12,1,2] else "الصيف"
+    st.info(f"❄️ نصيحة فصل {season}: اشرب سوائل دافئة وحافظ على نشاطك رغم البرد.")
