@@ -4,192 +4,187 @@ import numpy as np
 import plotly.express as px
 from datetime import datetime
 
-# 1. إعدادات المنصة
-st.set_page_config(page_title="Health Student | الموسوعة الشاملة", page_icon="🎓", layout="wide")
+# 1. إعدادات المنصة (تجعل الموقع متوافق مع الموبايل والكمبيوتر)
+st.set_page_config(page_title="Health Student | الموسوعة الذكية", page_icon="🎓", layout="wide")
 
-# 2. تصميم CSS (واجهة عصرية وتفاعلية)
+# 2. تصميم CSS احترافي (تنسيق الألوان والبطاقات)
 st.markdown("""
     <style>
     .stApp { background-color: #f8fafc; }
     .main-header {
         background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
-        padding: 50px; border-radius: 20px; text-align: center; color: white; margin-bottom: 30px;
-        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        padding: 40px; border-radius: 20px; text-align: center; color: white; margin-bottom: 25px;
     }
     .card {
-        background: white; padding: 25px; border-radius: 15px;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 20px;
+        background: white; padding: 20px; border-radius: 15px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 20px;
         border-right: 8px solid #2563eb;
     }
     .solution-box {
         background: #fff7ed; border-right: 6px solid #f97316;
-        padding: 15px; border-radius: 10px; margin-top: 10px; color: #9a3412; font-size: 14px;
+        padding: 15px; border-radius: 10px; margin-top: 10px; color: #9a3412;
     }
     .success-box {
         background: #f0fdf4; border-right: 6px solid #22c55e;
         padding: 15px; border-radius: 10px; margin-top: 10px; color: #166534;
     }
-    .stTabs [data-baseweb="tab"] { font-size: 18px; font-weight: bold; }
     </style>
 """, unsafe_allow_html=True)
 
 # 3. العنوان الرئيسي
-st.markdown('<div class="main-header"><h1>🎓 Health Student Encyclopedia</h1><p>الموسوعة التفاعلية لحلول مشاكل الطلاب الصحية والدراسية</p></div>', unsafe_allow_html=True)
+st.markdown('<div class="main-header"><h1>🎓 Health Student Encyclopedia</h1><p>الموسوعة التفاعلية الشاملة لحلول مشاكل الطلاب</p></div>', unsafe_allow_html=True)
 
-# 4. القائمة الجانبية (Sidebar)
-with st.sidebar:
-    st.header("👤 بيانات الطالب")
-    name = st.text_input("الاسم بالكامل:", placeholder="اكتب اسمك هنا...")
-    if 'water' not in st.session_state: st.session_state.water = 0
-    
-    st.write("---")
-    st.subheader(f"💧 كوبايات المية: {st.session_state.water}")
-    if st.button("🥤 سجل كوب مياه"):
-        st.session_state.water += 1
-        st.toast("بطل! الترطيب أساس التركيز.")
-    
-    st.write("---")
-    st.info("قم بإنهاء جميع الأقسام لتحميل تقريرك النهائي.")
+# 4. إدخال الاسم (تم نقله هنا ليظهر فوراً على الموبايل)
+name = st.text_input("📝 ابدأ بكتابة اسمك لفتح الموسوعة والحلول:", placeholder="اكتب اسمك هنا...")
 
-# 5. منطق الموسوعة والحلول
 if not name:
-    st.warning("⚠️ يرجى إدخال اسمك في القائمة الجانبية لفتح الموسوعة.")
+    st.info("👆 يرجى كتابة اسمك في الخانة أعلاه لتظهر لك أقسام الموسوعة والتقرير النهائي.")
+    
+    # إضافة لمسة تفاعلية في القائمة الجانبية حتى قبل كتابة الاسم
+    with st.sidebar:
+        st.header("💧 عداد المياه اللحظي")
+        if 'water_count' not in st.session_state: st.session_state.water_count = 0
+        st.subheader(f"كؤوس الماء: {st.session_state.water_count}")
+        if st.button("🥤 سجل كوب مياه"):
+            st.session_state.water_count += 1
+            st.toast("ممتاز! الترطيب ينعش عقلك 💧")
 else:
-    # قائمة لتخزين الحلول للتقرير النهائي
-    user_solutions = []
+    # قائمة لتخزين كافة الحلول المقترحة للتقرير
+    final_solutions = []
 
-    tabs = st.tabs(["🌙 النوم والتركيز", "📱 التكنولوجيا", "🏃 الحركة والآلام", "🍎 التغذية والدماغ", "🧠 الحالة النفسية", "📥 التقرير النهائي"])
+    # 5. التبويبات التفاعلية (Tabs)
+    tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
+        "🌙 النوم والتركيز", 
+        "📱 التكنولوجيا", 
+        "🏃 الحركة والآلام", 
+        "🍎 التغذية والدماغ", 
+        "🧠 الحالة النفسية", 
+        "📥 تحميل التقرير"
+    ])
 
     # --- تبويب النوم ---
-    with tabs[0]:
-        st.subheader("🌙 قسم حلول النوم")
-        c1, c2 = st.columns(2)
-        with c1:
+    with tab1:
+        st.markdown("### 😴 قسم حلول جودة النوم")
+        col1, col2 = st.columns(2)
+        with col1:
             st.markdown('<div class="card">', unsafe_allow_html=True)
-            s_hours = st.slider("ساعات نومك:", 2, 12, 7)
-            s_quality = st.select_slider("جودة النوم:", ["سيئة", "متقطعة", "ممتازة"])
-            coffee_late = st.toggle("شربت كافيين قبل النوم بـ 6 ساعات؟")
+            s_hours = st.slider("ساعات نومك الفعلية:", 2, 12, 7)
+            s_difficulty = st.radio("هل تواجه صعوبة في الاستيقاظ؟", ["نعم، دائماً", "أحياناً", "لا، أصحو بنشاط"])
             st.markdown('</div>', unsafe_allow_html=True)
-        with c2:
+        with col2:
             if s_hours < 7:
-                msg = "🛑 حل نقص النوم: المخ يحتاج دورات نوم كاملة لتثبيت المعلومات؛ حاول النوم 7 ساعات ونصف (5 دورات)."
-                st.markdown(f'<div class="solution-box">{msg}</div>', unsafe_allow_html=True)
-                user_solutions.append(msg)
-            if s_quality == "متقطعة":
-                msg = "🛑 حل النوم المتقطع: امنع الضوء الأزرق من الموبايل قبل النوم بـ 45 دقيقة لزيادة هرمون الميلاتونين."
-                st.markdown(f'<div class="solution-box">{msg}</div>', unsafe_allow_html=True)
-                user_solutions.append(msg)
-            if coffee_late:
-                msg = "🛑 حل الكافيين: الكافيين يغلق مستقبلات التعب؛ استبدله بـ 'بابونج' أو 'ينسون' في المساء."
-                st.markdown(f'<div class="solution-box">{msg}</div>', unsafe_allow_html=True)
-                user_solutions.append(msg)
+                sol = "🛑 حل نقص النوم: نومك أقل من الاحتياج البيولوجي (8 ساعات). الحل هو النوم قبل 11 مساءً لتعويض هرمونات النمو والتركيز."
+                st.markdown(f'<div class="solution-box">{sol}</div>', unsafe_allow_html=True)
+                final_solutions.append(sol)
+            if s_difficulty == "نعم، دائماً":
+                sol = "🛑 حل خمول الاستيقاظ: جسمك يمر بـ 'قصور ذاتي للنوم'. الحل هو التعرض لضوء الشمس فور الاستيقاظ لمدة 5 دقائق لضبط الساعة البيولوجية."
+                st.markdown(f'<div class="solution-box">{sol}</div>', unsafe_allow_html=True)
+                final_solutions.append(sol)
 
     # --- تبويب التكنولوجيا ---
-    with tabs[1]:
-        st.subheader("📱 قسم حلول إجهاد الشاشات")
-        c3, c4 = st.columns(2)
-        with c3:
+    with tab2:
+        st.markdown("### 📱 حلول إجهاد العين والتشتت")
+        col3, col4 = st.columns(2)
+        with col3:
             st.markdown('<div class="card">', unsafe_allow_html=True)
-            p_hours = st.slider("ساعات الموبايل (ترفيه):", 1, 16, 5)
-            eye_pain = st.checkbox("بتحس بجفاف أو حرقان في عينك؟")
-            st_distract = st.checkbox("الموبايل بيعطلك عن المذاكرة؟")
+            p_hours = st.slider("ساعات استخدام الهاتف يومياً:", 1, 16, 5)
+            eye_dry = st.checkbox("هل تعاني من جفاف العين أو ضبابية الرؤية؟")
             st.markdown('</div>', unsafe_allow_html=True)
-        with c4:
-            if eye_pain:
-                msg = "🛑 حل إجهاد العين: طبق قاعدة (20-20-20)؛ كل 20 دقيقة انظر لمسافة بعيدة لمدة 20 ثانية."
-                st.markdown(f'<div class="solution-box">{msg}</div>', unsafe_allow_html=True)
-                user_solutions.append(msg)
-            if p_hours > 6 or st_distract:
-                msg = "🛑 حل التشتت الرقمي: استخدم تطبيقات (App Block) لقفل السوشيال ميديا وقت المذاكرة الجادة."
-                st.markdown(f'<div class="solution-box">{msg}</div>', unsafe_allow_html=True)
-                user_solutions.append(msg)
+        with col4:
+            if eye_dry:
+                sol = "🛑 حل إجهاد العين: طبق قاعدة 20-20-20 (كل 20 دقيقة مذاكرة، انظر لشيء بعيد 20 قدم لمدة 20 ثانية) واستخدم قطرة مرطبة."
+                st.markdown(f'<div class="solution-box">{sol}</div>', unsafe_allow_html=True)
+                final_solutions.append(sol)
+            if p_hours > 6:
+                sol = "🛑 حل الإدمان الرقمي: وقت الشاشة مرتفع جداً. الحل هو تفعيل 'نمط التركيز' وحذف تطبيقات السوشيال ميديا وقت الامتحانات."
+                st.markdown(f'<div class="solution-box">{sol}</div>', unsafe_allow_html=True)
+                final_solutions.append(sol)
 
     # --- تبويب الحركة ---
-    with tabs[2]:
-        st.subheader("🏃 قسم حلول آلام الجسد")
-        c5, c6 = st.columns(2)
-        with c5:
+    with tab3:
+        st.markdown("### 🏃 حلول آلام الظهر والرقبة")
+        col5, col6 = st.columns(2)
+        with col5:
             st.markdown('<div class="card">', unsafe_allow_html=True)
-            active_d = st.slider("أيام الرياضة أسبوعياً:", 0, 7, 2)
-            back_p = st.radio("وجع الظهر والرقبة:", ["لا يوجد", "بسيط", "مزعج"])
+            back_p = st.radio("هل تشعر بألم في الرقبة بسبب المذاكرة؟", ["لا يوجد", "بسيط", "شديد"])
+            sitting = st.number_input("ساعات الجلوس المتواصل:", 1, 10, 3)
             st.markdown('</div>', unsafe_allow_html=True)
-        with c6:
-            if active_d < 3:
-                msg = "🛑 حل الخمول: قلة الحركة تقلل وصول الدم للمخ؛ اتمشى 15 دقيقة فقط يومياً لتجديد نشاطك."
-                st.markdown(f'<div class="solution-card">{msg}</div>', unsafe_allow_html=True)
-                user_solutions.append(msg)
+        with col6:
             if back_p != "لا يوجد":
-                msg = "🛑 حل آلام الظهر: تأكد أن الشاشة في مستوى عينك، ولا تذاكر منبطحاً على السرير أبداً."
-                st.markdown(f'<div class="solution-box">{msg}</div>', unsafe_allow_html=True)
-                user_solutions.append(msg)
+                sol = "🛑 حل آلام الرقبة: تأكد أن حافة اللابتوب العلوية في مستوى عينك. تجنب المذاكرة منحنياً فوق المكتب."
+                st.markdown(f'<div class="solution-box">{sol}</div>', unsafe_allow_html=True)
+                final_solutions.append(sol)
+            if sitting > 2:
+                sol = "🛑 حل الجلوس الطويل: يسبب ركود الدم. الحل هو الوقوف وعمل تمارين إطالة بسيطة (Stretching) كل 45 دقيقة."
+                st.markdown(f'<div class="solution-box">{sol}</div>', unsafe_allow_html=True)
+                final_solutions.append(sol)
 
     # --- تبويب التغذية ---
-    with tabs[3]:
-        st.subheader("🍎 قسم حلول الغذاء والتركيز")
-        c7, c8 = st.columns(2)
-        with c7:
+    with tab4:
+        st.markdown("### 🍎 وقود الدماغ والتركيز")
+        col7, col8 = st.columns(2)
+        with col7:
             st.markdown('<div class="card">', unsafe_allow_html=True)
-            junk_f = st.checkbox("بتعتمد على الوجبات السريعة كتير؟")
-            sugar_high = st.toggle("بتاكل سكريات/حلويات كتير وأنت بتذاكر؟")
+            fast_food = st.checkbox("هل تعتمد على الوجبات السريعة؟")
+            sugar = st.toggle("هل تتناول سكريات بكثرة أثناء المذاكرة؟")
             st.markdown('</div>', unsafe_allow_html=True)
-        with c8:
-            if junk_f:
-                msg = "🛑 حل الوجبات السريعة: الدهون المشبعة تسبب خمولاً ذهنياً؛ استبدلها بوجبة منزلية غنية بالألياف."
-                st.markdown(f'<div class="solution-box">{msg}</div>', unsafe_allow_html=True)
-                user_solutions.append(msg)
-            if sugar_high:
-                msg = "🛑 حل السكر: السكر يرفع الطاقة ثم يسقطها (Sugar Crash)؛ ركز على المكسرات كوقود للمخ."
-                st.markdown(f'<div class="solution-box">{msg}</div>', unsafe_allow_html=True)
-                user_solutions.append(msg)
+        with col8:
+            if sugar:
+                sol = "🛑 حل هبوط الطاقة: السكر يسبب (Sugar Crash) بعد ساعة. استبدله بالمكسرات أو زبدة الفول السوداني لطاقة مستدامة."
+                st.markdown(f'<div class="solution-box">{sol}</div>', unsafe_allow_html=True)
+                final_solutions.append(sol)
+            if fast_food:
+                sol = "🛑 حل الخمول الغذائي: الوجبات السريعة مليئة بالدهون التي تسبب النعاس. الحل هو التركيز على البروتين (بيض/تونة) لزيادة اليقظة."
+                st.markdown(f'<div class="solution-box">{sol}</div>', unsafe_allow_html=True)
+                final_solutions.append(sol)
 
     # --- تبويب الحالة النفسية ---
-    with tabs[4]:
-        st.subheader("🧠 قسم حلول التسويف والقلق")
-        c9, c10 = st.columns(2)
-        with c9:
+    with tab5:
+        st.markdown("### 🧠 حلول التسويف والتوتر")
+        col9, col10 = st.columns(2)
+        with col9:
             st.markdown('<div class="card">', unsafe_allow_html=True)
-            procrastinate = st.checkbox("بتأجل المذاكرة للوقت الضايع؟")
-            stress_level = st.select_slider("قلق الامتحانات:", options=["هادئ", "قلق", "توتر شديد"])
+            procrast = st.radio("هل تؤجل مهامك لآخر وقت؟", ["دائماً", "أحياناً", "نادراً"])
+            stress = st.select_slider("مستوى القلق العام:", options=["هادئ", "متوتر", "منهار"])
             st.markdown('</div>', unsafe_allow_html=True)
-        with c10:
-            if procrastinate:
-                msg = "🛑 حل التسويف: استخدم قاعدة (الـ 5 دقائق)؛ ابدأ المذاكرة لمدة 5 دقائق فقط وسيكمل مخك الباقي."
-                st.markdown(f'<div class="solution-box">{msg}</div>', unsafe_allow_html=True)
-                user_solutions.append(msg)
-            if stress_level == "توتر شديد":
-                msg = "🛑 حل التوتر: جرب تمرين التنفس (Box Breathing) 4 ثواني شهيق - 4 كتم - 4 زفير."
-                st.markdown(f'<div class="solution-box">{msg}</div>', unsafe_allow_html=True)
-                user_solutions.append(msg)
+        with col10:
+            if procrast == "دائماً":
+                sol = "🛑 حل التسويف: استخدم تقنية 'بومودورو' (25 دقيقة مذاكرة - 5 دقائق راحة). ابدأ بأصعب مهمة في أول اليوم."
+                st.markdown(f'<div class="solution-box">{sol}</div>', unsafe_allow_html=True)
+                final_solutions.append(sol)
+            if stress == "منهار":
+                sol = "🛑 حل التوتر الشديد: جرب تمرين التنفس المربع (شهيق 4 - كتم 4 - زفير 4 - كتم 4) لتهدئة الجهاز العصبي فوراً."
+                st.markdown(f'<div class="solution-box">{sol}</div>', unsafe_allow_html=True)
+                final_solutions.append(sol)
 
-    # --- تبويب التقرير النهائي ---
-    with tabs[5]:
-        st.markdown(f"## 📄 التقرير الصحي المتكامل للطالب: {name}")
+    # --- تبويب التقرير النهائي (تحميل PDF/Text) ---
+    with tab6:
+        st.markdown(f"## 📄 التقرير الصحي الشامل للطالب: {name}")
+        st.write(f"تاريخ الإصدار: {datetime.now().strftime('%Y-%m-%d')}")
         
-        # تجميع نص التقرير
-        full_report = f"تقرير موسوعة Health Student\n"
-        full_report += f"الاسم: {name}\n"
-        full_report += f"التاريخ: {datetime.now().strftime('%Y-%m-%d')}\n"
-        full_report += "-------------------------------------------\n"
-        full_report += f"- ساعات النوم: {s_hours} ساعة\n"
-        full_report += f"- ساعات استخدام الموبايل: {p_hours} ساعة\n"
-        full_report += f"- أكواب الماء المسجلة: {st.session_state.water}\n"
-        full_report += "-------------------------------------------\n"
-        full_report += "📌 الروشتة والحلول المقترحة لك:\n"
+        # تجميع التقرير النهائي
+        report_content = f"تقرير موسوعة Health Student\n"
+        report_content += f"اسم الطالب: {name}\n"
+        report_content += f"-------------------------------------------\n"
+        report_content += f"• ساعات النوم: {s_hours} ساعة\n"
+        report_content += f"• ساعات الهاتف: {p_hours} ساعة\n"
+        report_content += f"• كؤوس الماء: {st.session_state.get('water_count', 0)}\n"
+        report_content += f"-------------------------------------------\n"
+        report_content += "📌 الروشتة المخصصة والحلول:\n\n"
         
-        if not user_solutions:
-            full_report += "✅ عاداتك ممتازة، لا توجد مشاكل ملحوظة حالياً. استمر!"
+        if not final_solutions:
+            report_content += "✅ عاداتك رائعة جداً! استمر على هذا المنوال."
         else:
-            for i, s in enumerate(user_solutions, 1):
-                full_report += f"{i}. {s}\n"
+            for i, s in enumerate(final_solutions, 1):
+                report_content += f"{i}. {s}\n\n"
         
-        # عرض التقرير في الموقع
-        st.text_area("معاينة التقرير:", full_report, height=300)
+        st.text_area("معاينة التقرير:", report_content, height=350)
         
-        # زر التحميل
+        # زر التحميل التفاعلي
         st.download_button(
-            label="📥 اضغط هنا لتحميل تقريرك (Text/PDF Ready)",
-            data=full_report,
-            file_name=f"Health_Report_{name}.txt",
+            label="📥 اضغط هنا لتحميل تقريرك كملف نصي (جاهز للطباعة)",
+            data=report_content,
+            file_name=f"Report_{name}.txt",
             mime="text/plain"
         )
         st.balloons()
