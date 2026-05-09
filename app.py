@@ -4,156 +4,119 @@ import numpy as np
 import plotly.express as px
 from datetime import datetime
 
-# 1. إعدادات المنصة الأساسية
-st.set_page_config(page_title="Health Student | المنصة المتكاملة", page_icon="🎓", layout="wide")
+# 1. إعدادات المنصة
+st.set_page_config(page_title="Health Student | حلول صحية ذكية", page_icon="🎓", layout="wide")
 
-# 2. تصميم احترافي (CSS) لتنظيم الألوان والمساحات الواسعة
+# 2. تصميم احترافي (CSS)
 st.markdown("""
     <style>
-    .stApp { background-color: #f4f7f6; }
+    .stApp { background-color: #f8fafc; }
     .main-header {
-        background: linear-gradient(135deg, #0f172a 0%, #1e40af 100%);
+        background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
         padding: 40px; border-radius: 20px; text-align: center; color: white; margin-bottom: 30px;
     }
-    .stTabs [data-baseweb="tab"] {
-        font-size: 20px; font-weight: bold; padding: 10px 25px; color: #1e40af;
-    }
     .card {
-        background: white; padding: 25px; border-radius: 15px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 20px;
-        border-top: 5px solid #3b82f6;
+        background: white; padding: 20px; border-radius: 15px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 20px;
+        border-bottom: 4px solid #3b82f6;
     }
-    .recommendation {
-        background: #f0f9ff; border-right: 5px solid #0ea5e9;
-        padding: 15px; border-radius: 8px; margin-top: 10px; color: #0369a1;
+    .solution-box {
+        background: #fff7ed; border-right: 5px solid #ea580c;
+        padding: 15px; border-radius: 8px; margin-top: 10px; color: #9a3412;
     }
-    h2, h3 { color: #1e3a8a; }
+    .success-box {
+        background: #f0fdf4; border-right: 5px solid #22c55e;
+        padding: 15px; border-radius: 8px; margin-top: 10px; color: #166534;
+    }
+    h3 { color: #1e293b; font-weight: bold; }
     </style>
 """, unsafe_allow_html=True)
 
-# 3. العنوان الرئيسي للمنصة
-st.markdown('<div class="main-header"><h1>🎓 Health Student Dashboard</h1><p>النظام الشامل لتحليل العادات الصحية وتحسين أداء الطلاب</p></div>', unsafe_allow_html=True)
+# 3. العنوان الرئيسي
+st.markdown('<div class="main-header"><h1>🎓 Health Student Solutions</h1><p>تحليل العادات وتقديم حلول علمية مخصصة للطلاب</p></div>', unsafe_allow_html=True)
 
-# 4. القائمة الجانبية (Sidebar) لجمع البيانات الأساسية
+# 4. القائمة الجانبية (Sidebar) - بسيطة جداً
 with st.sidebar:
-    st.image("https://cdn-icons-png.flaticon.com/512/3429/3429433.png", width=100)
-    st.header("👤 الملف الشخصي")
-    student_name = st.text_input("اسم الطالب بالكامل:", placeholder="ادخل اسمك هنا...")
-    university = st.text_input("الجامعة / الكلية:")
-    level = st.selectbox("المستوى الدراسي:", ["سنة أولى", "سنة ثانية", "سنة ثالثة", "سنة رابعة", "خريج"])
-    
+    st.header("👤 ملف الطالب")
+    student_name = st.text_input("اسم الطالب:", placeholder="اكتب اسمك هنا...")
+    age = st.number_input("العمر:", 15, 50, 20)
     st.write("---")
-    st.header("🥗 ملخص سريع")
-    water_daily = st.number_input("أكواب الماء اليومية:", 0, 20, 8)
-    if st.button("🔄 إعادة ضبط كل البيانات"):
-        st.rerun()
+    st.info("قم بتعبئة الأقسام في اليمين للحصول على الحلول.")
 
-# 5. منطق التحقق من الاسم لبدء العرض
+# 5. منطق التحقق
 if not student_name:
-    st.warning("👋 أهلاً بك! من فضلك ابدأ بكتابة اسمك في القائمة الجانبية لفتح ملفك الصحي المترتب.")
+    st.warning("👋 أهلاً بك! من فضلك اكتب اسمك للبدء في تحليل عاداتك الصحية.")
 else:
-    # إنشاء التبويبات (Tabs) لتنظيم الموقع ومنع التداخل
-    tab1, tab2, tab3, tab4, tab5 = st.tabs([
-        "😴 جودة النوم", 
-        "📱 العادات الرقمية", 
-        "🏃 النشاط البدني", 
-        "🥗 التغذية والتركيز", 
-        "📊 التقرير والتحليل"
-    ])
+    # إنشاء التبويبات (Tabs)
+    tab1, tab2, tab3, tab4 = st.tabs(["😴 النوم والتركيز", "📱 الموبايل والدراسة", "🏃 الرياضة والحركة", "🥗 التغذية والماء"])
 
     # --- القسم الأول: النوم ---
     with tab1:
-        st.markdown('## 🌙 تحليل جودة النوم')
-        col1, col2 = st.columns(2)
-        with col1:
+        st.markdown('### 🌙 قسم النوم')
+        c1, c2 = st.columns(2)
+        with c1:
             st.markdown('<div class="card">', unsafe_allow_html=True)
-            sleep_hours = st.slider("عدد ساعات نومك الفعلية:", 2, 14, 8)
-            bed_time = st.time_input("في أي ساعة تنام عادةً؟", datetime.strptime("23:00", "%H:%M"))
-            wake_time = st.time_input("في أي ساعة تستيقظ؟", datetime.strptime("07:00", "%H:%M"))
+            sleep_h = st.slider("كم ساعة نمت بالأمس؟", 2, 14, 7)
+            trouble_sleeping = st.radio("هل تجد صعوبة في النوم فور دخولك السرير؟", ["نعم دائماً", "أحياناً", "لا، أنام بسرعة"])
             st.markdown('</div>', unsafe_allow_html=True)
-        with col2:
-            fig_sleep = px.bar(
-                x=["نومك", "المعدل المثالي"], 
-                y=[sleep_hours, 8], 
-                color=["أنت", "الهدف"],
-                title="مقارنة ساعات النوم اليومية",
-                labels={'x': '', 'y': 'ساعات النوم'}
-            )
-            st.plotly_chart(fig_sleep, use_container_width=True)
-        
-        st.markdown('<div class="recommendation"><b>💡 توصية النوم:</b><br>' + 
-                   ("أحسنت! ساعات نومك كافية جداً للتحصيل الدراسي." if sleep_hours >= 7 else "انتبه! نقص النوم يقلل من قدرة عقلك على تخزين المعلومات الجديدة.") + '</div>', unsafe_allow_html=True)
+        with c2:
+            st.markdown('**التحليل والحلول:**')
+            if sleep_h < 7:
+                st.markdown('<div class="solution-box"><b>🛑 المشكلة:</b> نقص حاد في النوم.<br><b>✅ الحل:</b> حاول تثبيت ميعاد للنوم يومياً، وقلل الكافيين بعد الساعة 5 مساءً.</div>', unsafe_allow_html=True)
+            if trouble_sleeping == "نعم دائماً":
+                st.markdown('<div class="solution-box"><b>🛑 المشكلة:</b> أرق البداية.<br><b>✅ الحل:</b> اترك الموبايل قبل النوم بـ 45 دقيقة، وجرب قراءة كتاب ورقي أو الاستماع لصوت هادئ.</div>', unsafe_allow_html=True)
+            if sleep_h >= 7 and trouble_sleeping == "لا، أنام بسرعة":
+                st.markdown('<div class="success-box">✅ نظام نومك مثالي، استمر على هذا المنوال لضمان تركيزك الدراسي.</div>', unsafe_allow_html=True)
 
-    # --- القسم الثاني: استخدام الموبايل ---
+    # --- القسم الثاني: الموبايل ---
     with tab2:
-        st.markdown('## 📱 إدارة وقت الشاشة')
-        col_m1, col_m2 = st.columns(2)
-        with col_m1:
+        st.markdown('### 📱 قسم الموبايل')
+        cm1, cm2 = st.columns(2)
+        with cm1:
             st.markdown('<div class="card">', unsafe_allow_html=True)
-            screen_time = st.slider("عدد ساعات استخدام الموبايل (ترفيه):", 1, 18, 5)
-            apps = st.multiselect("أكثر التطبيقات التي تستهلك وقتك:", ["فيسبوك", "تيك توك", "يوتيوب", "ألعاب", "واتساب"])
-            study_distraction = st.radio("هل يشتتك الموبايل أثناء المذاكرة؟", ["دائماً", "أحياناً", "نادراً"])
+            phone_h = st.slider("ساعات استخدام الموبايل يومياً:", 1, 15, 5)
+            study_phone = st.radio("هل تستخدم الموبايل أثناء المذاكرة؟", ["نعم، للتسلية", "للضرورة فقط", "لا ألمسه"])
             st.markdown('</div>', unsafe_allow_html=True)
-        with col_m2:
-            fig_screen = px.pie(values=[screen_time, 24-screen_time], names=["وقت الشاشة", "بقية يومك"], hole=0.5, title="تأثير الموبايل على يومك")
-            st.plotly_chart(fig_screen, use_container_width=True)
+        with cm2:
+            st.markdown('**التحليل والحلول:**')
+            if phone_h > 6:
+                st.markdown('<div class="solution-box"><b>🛑 المشكلة:</b> وقت الشاشة مرتفع جداً.<br><b>✅ الحل:</b> فعل خاصية (Focus Mode) في موبايلك وحدد وقت لتطبيقات السوشيال ميديا.</div>', unsafe_allow_html=True)
+            if study_phone == "نعم، للتسلية":
+                st.markdown('<div class="solution-box"><b>🛑 المشكلة:</b> تشتت الانتباه.<br><b>✅ الحل:</b> استخدم تقنية (Pomodoro) - ذاكر 25 دقيقة وكافئ نفسك بـ 5 دقائق موبايل.</div>', unsafe_allow_html=True)
 
-    # --- القسم الثالث: النشاط البدني ---
+    # --- القسم الثالث: الرياضة ---
     with tab3:
-        st.markdown('## 🏃 النشاط البدني والحركة')
-        col_p1, col_p2 = st.columns(2)
-        with col_p1:
+        st.markdown('### 🏃 قسم الحركة')
+        cp1, cp2 = st.columns(2)
+        with cp1:
             st.markdown('<div class="card">', unsafe_allow_html=True)
-            active_days = st.slider("كم يوماً تمارس الرياضة أسبوعياً؟", 0, 7, 3)
-            activity_type = st.selectbox("نوع النشاط المفضل:", ["مشي سريع", "جيم / قوى", "رياضة جماعية", "يوجا/تمطيط"])
-            sitting_h = st.number_input("ساعات الجلوس للدراسة يومياً:", 1, 15, 6)
+            active_days = st.slider("أيام النشاط البدني أسبوعياً:", 0, 7, 2)
+            stiff_neck = st.checkbox("هل تشعر بآلام في الرقبة أو الظهر بسبب الجلوس؟")
             st.markdown('</div>', unsafe_allow_html=True)
-        with col_p2:
-            # رسم بياني تخيلي للخطوات
-            steps_data = pd.DataFrame({"اليوم": ["السبت", "الأحد", "الاثنين", "الثلاثاء", "الأربعاء"], "الخطوات": np.random.randint(3000, 10000, 5)})
-            fig_steps = px.line(steps_data, x="اليوم", y="الخطوات", title="معدل نشاطك الأسبوعي المتوقع")
-            st.plotly_chart(fig_steps, use_container_width=True)
+        with cp2:
+            st.markdown('**التحليل والحلول:**')
+            if active_days < 3:
+                st.markdown('<div class="solution-box"><b>🛑 المشكلة:</b> خمول بدني.<br><b>✅ الحل:</b> المشي لمدة 15 دقيقة فقط يومياً يحسن مزاجك وقدرتك على الحفظ.</div>', unsafe_allow_html=True)
+            if stiff_neck:
+                st.markdown('<div class="solution-box"><b>🛑 المشكلة:</b> إجهاد وضعية الجلوس.<br><b>✅ الحل:</b> تأكد من وضع الشاشة في مستوى عينك، وقم بعمل تمارين إطالة للرقبة كل ساعة.</div>', unsafe_allow_html=True)
 
-    # --- القسم الرابع: التغذية والدراسة ---
+    # --- القسم الرابع: التغذية ---
     with tab4:
-        st.markdown('## 🥗 التغذية والأداء الدراسي')
-        col_f1, col_f2 = st.columns(2)
-        with col_f1:
+        st.markdown('### 🥗 قسم التغذية')
+        cf1, cf2 = st.columns(2)
+        with cf1:
             st.markdown('<div class="card">', unsafe_allow_html=True)
-            caffeine = st.slider("عدد أكواب المنبهات (قهوة/شاي):", 0, 10, 2)
-            fast_food = st.selectbox("الوجبات السريعة أسبوعياً:", ["نادراً", "مرة واحدة", "2-3 مرات", "يومياً تقريباً"])
-            fruits = st.checkbox("أتناول الفواكه والخضروات يومياً")
-            breakfast = st.checkbox("أحرص على وجبة الإفطار قبل الدراسة")
+            water = st.slider("أكواب الماء يومياً:", 0, 15, 6)
+            junk_food = st.selectbox("كم مرة تأكل وجبات سريعة؟", ["نادراً", "مرتين أسبوعياً", "يومياً"])
             st.markdown('</div>', unsafe_allow_html=True)
-        with col_f2:
-            diet_points = (20 if water_daily >= 8 else 10) + (20 if fruits else 0) + (20 if breakfast else 0)
-            st.write(f"### درجة التغذية الصحية: {diet_points}%")
-            st.progress(diet_points / 100)
-            st.info("💡 نصيحة: الإفطار والماء هما المحرك الأساسي لتركيزك في المحاضرات.")
+        with cf2:
+            st.markdown('**التحليل والحلول:**')
+            if water < 8:
+                st.markdown('<div class="solution-box"><b>🛑 المشكلة:</b> جفاف بسيط.<br><b>✅ الحل:</b> اشرب كوب ماء فور الاستيقاظ، واجعل زجاجة الماء أمامك دائماً أثناء المذاكرة.</div>', unsafe_allow_html=True)
+            if junk_food != "نادراً":
+                st.markdown('<div class="solution-box"><b>🛑 المشكلة:</b> طاقة غير مستقرة.<br><b>✅ الحل:</b> الوجبات السريعة تسبب خمولاً بعد ساعة؛ استبدلها بمكسرات أو فواكه أثناء المذاكرة.</div>', unsafe_allow_html=True)
 
-    # --- القسم الخامس: التقرير النهائي وتحليل البيانات ---
-    with tab5:
-        st.markdown(f'## 📊 التحليل الشامل للطالب: {student_name}')
-        st.write(f"**الجامعة:** {university} | **المستوى:** {level}")
-        
-        # عرض المقاييس الرئيسية بشكل احترافي
-        m1, m2, m3 = st.columns(3)
-        with m1:
-            st.metric("ساعات النوم", f"{sleep_hours} س", "جيد" if sleep_hours >= 7 else "قليل")
-        with m2:
-            st.metric("وقت الموبايل", f"{screen_time} س", "مرتفع" if screen_time > 6 else "مثالي", delta_color="inverse")
-        with m3:
-            st.metric("نقاط التغذية", f"{diet_points}%", f"{diet_points-50}%")
-
-        st.write("---")
-        
-        # تحليل نهائي ذكي
-        st.markdown("### 💡 التوصية الختامية المخصصة")
-        if sleep_hours >= 7 and screen_time <= 5 and fruits:
-            st.balloons()
-            st.success(f"أنت طالب متميز يا {student_name}! نظامك الحالي يدعم صحتك النفسية والجسدية بشكل رائع. استمر في هذا المسار.")
-        else:
-            st.warning(f"يا {student_name}، هناك فرصة كبيرة لتحسين أدائك الدراسي. ابدأ بتقليل ساعات الموبايل ساعة واحدة فقط، وزد من ساعات نومك، وستلاحظ فرقاً كبيراً في قدرتك على الحفظ والاستيعاب.")
-        
-        # رسم بياني مجمع (Radar Chart - اختياري لو الداتا كترت)
-        st.info(f"تاريخ إصدار التقرير: {datetime.now().strftime('%Y-%m-%d %H:%M')}")
+    # التقرير الختامي
+    st.write("---")
+    st.markdown(f"### 📊 التقرير النهائي لـ {student_name}")
+    st.info("بناءً على إجاباتك، قمنا بتوضيح الحلول المخصصة لك في كل قسم أعلاه. البدء بتغيير عادة واحدة فقط كفيل بتحسين مستواك الدراسي.")
