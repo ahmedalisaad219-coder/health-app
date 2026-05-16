@@ -3,10 +3,10 @@ import pandas as pd
 import numpy as np
 from datetime import datetime
 
-# 1. إعدادات المنصة
+# 1. إعدادات المنصة لضمان التوافق مع الموبايل والكمبيوتر
 st.set_page_config(page_title="Health Student | الموسوعة الذكية", page_icon="🎓", layout="wide")
 
-# 2. تصميم CSS احترافي (لحل مشكلة الخطوط والألوان وعرض الأرقام)
+# 2. تصميم CSS احترافي (تنسيق العناوين، البطاقات، وأرقام السلايدر)
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap');
@@ -18,12 +18,12 @@ st.markdown("""
     }
     .card {
         background: white; padding: 25px; border-radius: 15px;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin-bottom: 20px;
         border-right: 8px solid #2563eb;
     }
     .slider-val {
         background: #2563eb; color: white; padding: 5px 15px; 
-        border-radius: 10px; font-weight: bold; font-size: 22px;
+        border-radius: 10px; font-weight: bold; font-size: 22px; display: inline-block;
     }
     .solution-box {
         background: #fff7ed; border-right: 6px solid #f97316;
@@ -33,119 +33,128 @@ st.markdown("""
         padding: 15px; border-radius: 12px; margin-top: 10px; 
         font-weight: bold; text-align: center; border: 1px solid rgba(0,0,0,0.1);
     }
-    .stButton>button { width: 100%; border-radius: 10px; font-weight: bold; }
+    /* تنسيق زر الدخول ليكون واضحاً */
+    .stButton>button { width: 100%; border-radius: 12px; height: 50px; font-size: 18px; }
     </style>
 """, unsafe_allow_html=True)
 
-# 3. العنوان الرئيسي
-st.markdown('<div class="main-header"><h1>🎓 Health Student Encyclopedia</h1><p>الموسوعة التفاعلية الشاملة لحلول مشاكل الطلاب</p></div>', unsafe_allow_html=True)
-
-# 4. القائمة الجانبية (عداد المياه الذكي - كما في الصورة 9372.jpg)
-with st.sidebar:
-    st.header("💧 عداد المياه اللحظي")
-    if 'water_count' not in st.session_state: 
-        st.session_state.water_count = 0
-    
-    st.subheader(f"كؤوس الماء: {st.session_state.water_count}")
-    
-    # منطق الرسائل المتغيرة بناءً على عدد الكؤوس
-    if st.session_state.water_count <= 2:
-        msg, bg, txt = "⚠️ تحذير: مستوى الترطيب منخفض!", "#fee2e2", "#991b1b"
-    elif 3 <= st.session_state.water_count <= 5:
-        msg, bg, txt = "🥤 بداية جيدة ولكن استمر!", "#fef3c7", "#92400e"
-    elif 6 <= st.session_state.water_count <= 8:
-        msg, bg, txt = "✨ رائع! أنت في منطقة الأمان.", "#dcfce7", "#166534"
-    else:
-        msg, bg, txt = "👑 بطل الترطيب! نشاطك في القمة.", "#e0f2fe", "#075985"
-
-    st.markdown(f'<div class="water-msg" style="background-color: {bg}; color: {txt};">{msg}</div>', unsafe_allow_html=True)
-    if st.button("🥤 سجل كوب مياه"):
-        st.session_state.water_count += 1
-        st.rerun()
-    if st.button("🔄 تصفير العداد"):
-        st.session_state.water_count = 0
-        st.rerun()
-
-# 5. منطقة تسجيل الدخول (لحل مشكلة الصورة e7850cf4)
+# 3. تهيئة حالة الجلسة (Session State) لضمان عدم ضياع البيانات
 if 'logged_in' not in st.session_state:
     st.session_state.logged_in = False
+if 'user_name' not in st.session_state:
+    st.session_state.user_name = ""
+if 'water_count' not in st.session_state:
+    st.session_state.water_count = 0
 
+# 4. العنوان الرئيسي
+st.markdown('<div class="main-header"><h1>🎓 Health Student Encyclopedia</h1><p>الموسوعة التفاعلية الشاملة لحلول مشاكل الطلاب</p></div>', unsafe_allow_html=True)
+
+# 5. القائمة الجانبية (عداد المياه اللحظي - متاح دائماً بعد الدخول)
+if st.session_state.logged_in:
+    with st.sidebar:
+        st.header("💧 عداد المياه اللحظي")
+        st.subheader(f"كؤوس الماء: {st.session_state.water_count}")
+        
+        # منطق الرسائل المتغيرة بناءً على عدد الكؤوس
+        count = st.session_state.water_count
+        if count <= 2:
+            msg, bg, txt = "⚠️ تحذير: مستوى الترطيب منخفض جداً!", "#fee2e2", "#991b1b"
+        elif 3 <= count <= 5:
+            msg, bg, txt = "🥤 بداية جيدة ولكن غير كافية!", "#fef3c7", "#92400e"
+        elif 6 <= count <= 8:
+            msg, bg, txt = "✨ ممتاز! هذا هو المستوى المثالي.", "#dcfce7", "#166534"
+        else:
+            msg, bg, txt = "👑 بطل الترطيب! أنت في قمة النشاط.", "#e0f2fe", "#075985"
+
+        st.markdown(f'<div class="water-msg" style="background-color: {bg}; color: {txt};">{msg}</div>', unsafe_allow_html=True)
+        if st.button("🥤 سجل كوب مياه"):
+            st.session_state.water_count += 1
+            st.rerun()
+        if st.button("🔄 تصفير العداد"):
+            st.session_state.water_count = 0
+            st.rerun()
+
+# 6. شاشة الدخول (باستخدام Form لضمان ظهور الزرار فوراً)
 if not st.session_state.logged_in:
     st.markdown('<div class="card">', unsafe_allow_html=True)
-    name_input = st.text_input("📝 اكتب اسمك هنا لفتح أقسام الموسوعة:", placeholder="مثلاً: أحمد محمود...")
-    if name_input:
-        if st.button("دخول للموسوعة 🚀"):
-            st.session_state.logged_in = True
-            st.session_state.user_name = name_input
-            st.rerun()
-    st.info("💡 بعد كتابة الاسم، اضغط على زر 'دخول للموسوعة' ليظهر لك المحتوى.")
+    st.subheader("📝 ابدأ بكتابة اسمك لفتح الموسوعة:")
+    with st.form("login_form"):
+        name_input = st.text_input("اسم الطالب:", placeholder="اكتب اسمك هنا...")
+        submit = st.form_submit_button("دخول للموسوعة 🚀")
+        if submit:
+            if name_input.strip() != "":
+                st.session_state.logged_in = True
+                st.session_state.user_name = name_input
+                st.rerun()
+            else:
+                st.error("الرجاء كتابة الاسم أولاً!")
     st.markdown('</div>', unsafe_allow_html=True)
 
-# 6. عرض المحتوى بعد الدخول
+# 7. عرض محتوى الموسوعة بعد الدخول
 else:
-    final_solutions = []
     u_name = st.session_state.user_name
+    final_solutions = []
     
-    st.success(f"مرحباً بك يا {u_name}! يمكنك الآن التنقل بين الأقسام.")
+    st.success(f"مرحباً بك يا {u_name}! تم تفعيل الموسوعة والحلول.")
     
-    tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(["🌙 النوم", "📱 التكنولوجيا", "🏃 الحركة", "🍎 التغذية", "🧠 النفسية", "📥 التقرير"])
+    tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
+        "🌙 النوم", "📱 التكنولوجيا", "🏃 الحركة", "🍎 التغذية", "🧠 النفسية", "📥 التقرير"
+    ])
 
-    # --- تبويب النوم (حل مشكلة السلايدر والصورة b286d8a6) ---
+    # --- تبويب النوم ---
     with tab1:
-        st.markdown("### 😴 قسم حلول جودة النوم")
+        st.markdown("### 😴 حلول جودة النوم")
         col1, col2 = st.columns(2)
         with col1:
             st.markdown('<div class="card">', unsafe_allow_html=True)
-            s_hours = st.slider("ساعات نومك الفعلية:", 2, 12, 7, key="slp_sld")
-            st.markdown(f"الساعات: <span class='slider-val'>{s_hours}</span>", unsafe_allow_html=True)
+            s_hours = st.slider("ساعات نومك الفعلية:", 2, 12, 7, key="s_hours")
+            st.markdown(f"القيمة المختارة: <span class='slider-val'>{s_hours}</span>", unsafe_allow_html=True)
             st.write("---")
             st.write("**هل تواجه صعوبة في الاستيقاظ؟**")
-            s_yes = st.checkbox("نعم (Yes)", key="s_y")
-            s_no = st.checkbox("لا (No)", key="s_n")
+            s_y = st.checkbox("نعم (Yes)", key="s_y")
             st.markdown('</div>', unsafe_allow_html=True)
         with col2:
             if s_hours < 7:
-                sol = "🛑 حل نقص النوم: نومك أقل من 8 ساعات. حاول النوم قبل 11 مساءً."
+                sol = "🛑 حل نقص النوم: نومك أقل من الاحتياج. نم قبل 11 مساءً."
                 st.markdown(f'<div class="solution-box">{sol}</div>', unsafe_allow_html=True); final_solutions.append(sol)
-            if s_yes:
-                sol = "🛑 حل خمول الاستيقاظ: تعرض لضوء الشمس فور الاستيقاظ لضبط ساعتك البيولوجية."
+            if s_y:
+                sol = "🛑 حل خمول الاستيقاظ: تعرض لضوء الشمس فور استيقاظك."
                 st.markdown(f'<div class="solution-box">{sol}</div>', unsafe_allow_html=True); final_solutions.append(sol)
 
-    # --- تبويب التكنولوجيا (حل مشكلة السلايدر - الصورة 9359.jpg) ---
+    # --- تبويب التكنولوجيا ---
     with tab2:
-        st.markdown("### 📱 حلول إجهاد العين والتشتت")
+        st.markdown("### 📱 حلول إجهاد العين")
         col1, col2 = st.columns(2)
         with col1:
             st.markdown('<div class="card">', unsafe_allow_html=True)
-            p_hours = st.slider("ساعات استخدام الهاتف يومياً:", 1, 16, 5, key="tch_sld")
-            st.markdown(f"الساعات: <span class='slider-val'>{p_hours}</span>", unsafe_allow_html=True)
+            p_hours = st.slider("ساعات الهاتف يومياً:", 1, 16, 5, key="p_hours")
+            st.markdown(f"القيمة المختارة: <span class='slider-val'>{p_hours}</span>", unsafe_allow_html=True)
             st.write("---")
-            st.write("**هل تعاني من جفاف العين أو ضبابية الرؤية؟**")
-            eye_yes = st.checkbox("نعم (Yes)", key="e_y")
-            eye_no = st.checkbox("لا (No)", key="e_n")
+            st.write("**هل تعاني من جفاف العين؟**")
+            e_y = st.checkbox("نعم (Yes)", key="e_y")
             st.markdown('</div>', unsafe_allow_html=True)
         with col2:
-            if eye_yes:
+            if e_y:
                 sol = "🛑 حل إجهاد العين: طبق قاعدة 20-20-20 لراحة عينيك."
                 st.markdown(f'<div class="solution-box">{sol}</div>', unsafe_allow_html=True); final_solutions.append(sol)
             if p_hours > 6:
-                sol = "🛑 حل الإدمان الرقمي: وقت الشاشة مرتفع جداً. استخدم نمط التركيز."
+                sol = "🛑 حل التشتت: وقت الشاشة مرتفع. استخدم نمط التركيز."
                 st.markdown(f'<div class="solution-box">{sol}</div>', unsafe_allow_html=True); final_solutions.append(sol)
 
     # --- تبويب الحركة ---
     with tab3:
-        st.markdown("### 🏃 آلام الظهر والرقبة")
+        st.markdown("### 🏃 حلول آلام الجسم")
         col1, col2 = st.columns(2)
         with col1:
             st.markdown('<div class="card">', unsafe_allow_html=True)
-            st.write("**هل تشعر بألم في الرقبة بسبب المذاكرة؟**")
-            back_yes = st.checkbox("نعم (Yes)", key="b_y")
-            back_no = st.checkbox("لا (No)", key="b_n")
+            st.write("**هل تشعر بألم في الرقبة؟**")
+            b_y = st.checkbox("نعم (Yes)", key="b_y")
+            st.write("---")
             sitting = st.number_input("ساعات الجلوس المتواصل:", 1, 10, 3)
             st.markdown('</div>', unsafe_allow_html=True)
         with col2:
-            if back_yes:
-                sol = "🛑 حل آلام الرقبة: اجعل شاشة جهازك في مستوى عينك دائماً."
+            if b_y:
+                sol = "🛑 حل آلام الرقبة: اضبط ارتفاع شاشتك ليكون في مستوى العين."
                 st.markdown(f'<div class="solution-box">{sol}</div>', unsafe_allow_html=True); final_solutions.append(sol)
 
     # --- تبويب التغذية ---
@@ -154,38 +163,23 @@ else:
         col1, col2 = st.columns(2)
         with col1:
             st.markdown('<div class="card">', unsafe_allow_html=True)
-            st.write("**هل تعتمد على الوجبات السريعة؟**")
-            food_yes = st.checkbox("نعم (Yes)", key="f_y")
             st.write("**هل تتناول سكريات بكثرة؟**")
-            sug_yes = st.checkbox("نعم (Yes)", key="su_y")
+            su_y = st.checkbox("نعم (Yes)", key="su_y")
             st.markdown('</div>', unsafe_allow_html=True)
         with col2:
-            if sug_yes:
-                sol = "🛑 حل هبوط الطاقة: السكر يسبب خمولاً مفاجئاً. استبدله بالفاكهة أو المكسرات."
+            if su_y:
+                sol = "🛑 حل الطاقة: استبدل السكر بالمكسرات لتجنب الخمول المفاجئ."
                 st.markdown(f'<div class="solution-box">{sol}</div>', unsafe_allow_html=True); final_solutions.append(sol)
 
-    # --- تبويب الحالة النفسية ---
-    with tab5:
-        st.markdown("### 🧠 حلول التسويف")
-        col1, col2 = st.columns(2)
-        with col1:
-            st.markdown('<div class="card">', unsafe_allow_html=True)
-            st.write("**هل تؤجل مهامك لآخر وقت؟**")
-            proc_yes = st.checkbox("نعم (Yes)", key="p_y")
-            stress = st.select_slider("مستوى القلق العام:", options=["هادئ", "متوتر", "منهار"])
-            st.markdown(f"الحالة: <span class='slider-val'>{stress}</span>", unsafe_allow_html=True)
-            st.markdown('</div>', unsafe_allow_html=True)
-        with col2:
-            if proc_yes:
-                sol = "🛑 حل التسويف: استخدم تقنية بومودورو (25 دقيقة مذاكرة و 5 دقائق راحة)."
-                st.markdown(f'<div class="solution-box">{sol}</div>', unsafe_allow_html=True); final_solutions.append(sol)
-
-    # --- تبويب التقرير النهائي ---
+    # --- تبويب التقرير ---
     with tab6:
-        st.markdown(f"## 📄 التقرير النهائي لـ: {u_name}")
-        report = f"تقرير Health Student\nالاسم: {u_name}\nكؤوس الماء: {st.session_state.water_count}\n"
+        st.markdown(f"## 📄 التقرير الشامل: {u_name}")
+        report = f"تقرير موسوعة Health Student\nالاسم: {u_name}\nكؤوس الماء: {st.session_state.water_count}\n"
         report += "-------------------------------------------\n📌 الروشتة المخصصة:\n"
-        for i, s in enumerate(final_solutions, 1): report += f"{i}. {s}\n"
+        if final_solutions:
+            for i, s in enumerate(final_solutions, 1): report += f"{i}. {s}\n"
+        else:
+            report += "✅ عاداتك رائعة جداً! استمر."
         
         st.text_area("معاينة التقرير:", report, height=250)
         st.download_button("📥 تحميل التقرير", report, file_name=f"Report_{u_name}.txt")
