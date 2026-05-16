@@ -24,35 +24,63 @@ st.markdown("""
         background: #fff7ed; border-right: 6px solid #f97316;
         padding: 15px; border-radius: 10px; margin-top: 10px; color: #9a3412;
     }
-    .success-box {
-        background: #f0fdf4; border-right: 6px solid #22c55e;
-        padding: 15px; border-radius: 10px; margin-top: 10px; color: #166534;
+    .water-msg {
+        padding: 15px; border-radius: 12px; margin-top: 10px; 
+        font-weight: bold; text-align: center; border: 1px solid rgba(0,0,0,0.1);
     }
     </style>
 """, unsafe_allow_html=True)
 
 # 3. العنوان الرئيسي
-st.markdown('<div class="main-header"><h1>🎓 Health Student Encyclopedia</h1><p>الموسوعة التفاعلية الشاملة لحلول مشاكل الطلاب</p></div>', unsafe_allow_html=True)
+st.markdown('<div class="main-header"><h1>🎓 Health Student Encyclopedia</h1><p>الموسوعة التفاعلية الشاملة لحلول مشاكل الطلاب الصحية والدراسية</p></div>', unsafe_allow_html=True)
 
-# 4. إدخال الاسم (تم نقله هنا ليظهر فوراً على الموبايل)
+# 4. إعدادات القائمة الجانبية (تعديل عداد المياه الذكي)
+with st.sidebar:
+    st.header("💧 عداد المياه اللحظي")
+    if 'water_count' not in st.session_state: 
+        st.session_state.water_count = 0
+    
+    st.subheader(f"كؤوس الماء: {st.session_state.water_count}")
+    
+    # منطق الرسائل المتغيرة بناءً على عدد الكؤوس
+    if st.session_state.water_count <= 2:
+        msg = "⚠️ تحذير: مستوى الترطيب منخفض جداً! هذا قد يسبب الصداع وضعف التركيز. اشرب الآن."
+        bg_color = "#fee2e2"  # أحمر فاتح جداً
+        txt_color = "#991b1b"
+    elif 3 <= st.session_state.water_count <= 5:
+        msg = "🥤 بداية جيدة ولكن غير كافية! جسمك يحتاج المزيد من السوائل لرفع كفاءة التمثيل الغذائي."
+        bg_color = "#fef3c7"  # أصفر فاتح
+        txt_color = "#92400e"
+    elif 6 <= st.session_state.water_count <= 8:
+        msg = "✨ رائع! أنت الآن في منطقة الأمان الصحي. هذا المستوى يحسن الذاكرة والصفاء الذهني."
+        bg_color = "#dcfce7"  # أخضر فاتح
+        txt_color = "#166534"
+    else:
+        msg = "👑 مستوى احترافي! جسمك مرطب بالكامل وعقلك في أعلى مستويات اليقظة. استمر!"
+        bg_color = "#e0f2fe"  # أزرق فاتح
+        txt_color = "#075985"
+
+    # عرض الرسالة المتغيرة
+    st.markdown(f'<div class="water-msg" style="background-color: {bg_color}; color: {txt_color};">{msg}</div>', unsafe_allow_html=True)
+    
+    if st.button("🥤 سجل كوب مياه"):
+        st.session_state.water_count += 1
+        st.rerun() # لإعادة التحميل وتحديث الرسالة فوراً
+    
+    if st.button("🔄 تصفير العداد"):
+        st.session_state.water_count = 0
+        st.rerun()
+
+# 5. إدخال الاسم
 name = st.text_input("📝 ابدأ بكتابة اسمك لفتح الموسوعة والحلول:", placeholder="اكتب اسمك هنا...")
 
 if not name:
-    st.info("👆 يرجى كتابة اسمك في الخانة أعلاه لتظهر لك أقسام الموسوعة والتقرير النهائي.")
-    
-    # إضافة لمسة تفاعلية في القائمة الجانبية حتى قبل كتابة الاسم
-    with st.sidebar:
-        st.header("💧 عداد المياه اللحظي")
-        if 'water_count' not in st.session_state: st.session_state.water_count = 0
-        st.subheader(f"كؤوس الماء: {st.session_state.water_count}")
-        if st.button("🥤 سجل كوب مياه"):
-            st.session_state.water_count += 1
-            st.toast("ممتاز! الترطيب ينعش عقلك 💧")
+    st.warning("👆 يرجى كتابة اسمك في الخانة أعلاه لتظهر لك أقسام الموسوعة والتقرير النهائي.")
 else:
     # قائمة لتخزين كافة الحلول المقترحة للتقرير
     final_solutions = []
 
-    # 5. التبويبات التفاعلية (Tabs)
+    # 6. التبويبات التفاعلية (Tabs)
     tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
         "🌙 النوم والتركيز", 
         "📱 التكنولوجيا", 
@@ -77,7 +105,7 @@ else:
                 st.markdown(f'<div class="solution-box">{sol}</div>', unsafe_allow_html=True)
                 final_solutions.append(sol)
             if s_difficulty == "نعم، دائماً":
-                sol = "🛑 حل خمول الاستيقاظ: جسمك يمر بـ 'قصور ذاتي للنوم'. الحل هو التعرض لضوء الشمس فور الاستيقاظ لمدة 5 دقائق لضبط الساعة البيولوجية."
+                sol = "🛑 حل خمول الاستيقاظ: جسمك يمر بـ 'قصور ذاتي للنوم'. الحل هو التعرض لضوء الشمس فور الاستيقاظ لمدة 5 دقائق."
                 st.markdown(f'<div class="solution-box">{sol}</div>', unsafe_allow_html=True)
                 final_solutions.append(sol)
 
@@ -92,11 +120,11 @@ else:
             st.markdown('</div>', unsafe_allow_html=True)
         with col4:
             if eye_dry:
-                sol = "🛑 حل إجهاد العين: طبق قاعدة 20-20-20 (كل 20 دقيقة مذاكرة، انظر لشيء بعيد 20 قدم لمدة 20 ثانية) واستخدم قطرة مرطبة."
+                sol = "🛑 حل إجهاد العين: طبق قاعدة 20-20-20 (كل 20 دقيقة مذاكرة، انظر لشيء بعيد 20 قدم لمدة 20 ثانية)."
                 st.markdown(f'<div class="solution-box">{sol}</div>', unsafe_allow_html=True)
                 final_solutions.append(sol)
             if p_hours > 6:
-                sol = "🛑 حل الإدمان الرقمي: وقت الشاشة مرتفع جداً. الحل هو تفعيل 'نمط التركيز' وحذف تطبيقات السوشيال ميديا وقت الامتحانات."
+                sol = "🛑 حل الإدمان الرقمي: وقت الشاشة مرتفع جداً. الحل هو تفعيل 'نمط التركيز' وحذف تطبيقات السوشيال ميديا."
                 st.markdown(f'<div class="solution-box">{sol}</div>', unsafe_allow_html=True)
                 final_solutions.append(sol)
 
@@ -115,7 +143,7 @@ else:
                 st.markdown(f'<div class="solution-box">{sol}</div>', unsafe_allow_html=True)
                 final_solutions.append(sol)
             if sitting > 2:
-                sol = "🛑 حل الجلوس الطويل: يسبب ركود الدم. الحل هو الوقوف وعمل تمارين إطالة بسيطة (Stretching) كل 45 دقيقة."
+                sol = "🛑 حل الجلوس الطويل: يسبب ركود الدم. الحل هو الوقوف وعمل تمارين إطالة بسيطة كل 45 دقيقة."
                 st.markdown(f'<div class="solution-box">{sol}</div>', unsafe_allow_html=True)
                 final_solutions.append(sol)
 
@@ -130,11 +158,11 @@ else:
             st.markdown('</div>', unsafe_allow_html=True)
         with col8:
             if sugar:
-                sol = "🛑 حل هبوط الطاقة: السكر يسبب (Sugar Crash) بعد ساعة. استبدله بالمكسرات أو زبدة الفول السوداني لطاقة مستدامة."
+                sol = "🛑 حل هبوط الطاقة: السكر يسبب (Sugar Crash) بعد ساعة. استبدله بالمكسرات لطاقة مستدامة."
                 st.markdown(f'<div class="solution-box">{sol}</div>', unsafe_allow_html=True)
                 final_solutions.append(sol)
             if fast_food:
-                sol = "🛑 حل الخمول الغذائي: الوجبات السريعة مليئة بالدهون التي تسبب النعاس. الحل هو التركيز على البروتين (بيض/تونة) لزيادة اليقظة."
+                sol = "🛑 حل الخمول الغذائي: الوجبات السريعة تسبب النعاس. الحل هو التركيز على البروتين لزيادة اليقظة."
                 st.markdown(f'<div class="solution-box">{sol}</div>', unsafe_allow_html=True)
                 final_solutions.append(sol)
 
@@ -149,26 +177,25 @@ else:
             st.markdown('</div>', unsafe_allow_html=True)
         with col10:
             if procrast == "دائماً":
-                sol = "🛑 حل التسويف: استخدم تقنية 'بومودورو' (25 دقيقة مذاكرة - 5 دقائق راحة). ابدأ بأصعب مهمة في أول اليوم."
+                sol = "🛑 حل التسويف: استخدم تقنية 'بومودورو' (25 دقيقة مذاكرة - 5 دقائق راحة). ابدأ بأصعب مهمة."
                 st.markdown(f'<div class="solution-box">{sol}</div>', unsafe_allow_html=True)
                 final_solutions.append(sol)
             if stress == "منهار":
-                sol = "🛑 حل التوتر الشديد: جرب تمرين التنفس المربع (شهيق 4 - كتم 4 - زفير 4 - كتم 4) لتهدئة الجهاز العصبي فوراً."
+                sol = "🛑 حل التوتر الشديد: جرب تمرين التنفس المربع لتهدئة الجهاز العصبي فوراً."
                 st.markdown(f'<div class="solution-box">{sol}</div>', unsafe_allow_html=True)
                 final_solutions.append(sol)
 
-    # --- تبويب التقرير النهائي (تحميل PDF/Text) ---
+    # --- تبويب التقرير النهائي ---
     with tab6:
         st.markdown(f"## 📄 التقرير الصحي الشامل للطالب: {name}")
         st.write(f"تاريخ الإصدار: {datetime.now().strftime('%Y-%m-%d')}")
         
-        # تجميع التقرير النهائي
         report_content = f"تقرير موسوعة Health Student\n"
         report_content += f"اسم الطالب: {name}\n"
         report_content += f"-------------------------------------------\n"
         report_content += f"• ساعات النوم: {s_hours} ساعة\n"
         report_content += f"• ساعات الهاتف: {p_hours} ساعة\n"
-        report_content += f"• كؤوس الماء: {st.session_state.get('water_count', 0)}\n"
+        report_content += f"• كؤوس الماء: {st.session_state.water_count}\n"
         report_content += f"-------------------------------------------\n"
         report_content += "📌 الروشتة المخصصة والحلول:\n\n"
         
@@ -180,9 +207,8 @@ else:
         
         st.text_area("معاينة التقرير:", report_content, height=350)
         
-        # زر التحميل التفاعلي
         st.download_button(
-            label="📥 اضغط هنا لتحميل تقريرك كملف نصي (جاهز للطباعة)",
+            label="📥 اضغط هنا لتحميل تقريرك كملف نصي",
             data=report_content,
             file_name=f"Report_{name}.txt",
             mime="text/plain"
